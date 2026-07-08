@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LOGIC 로그인</title>
+<style>
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: #000;
+    font-family: "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+  }
+
+  /* 이미지 비율을 유지하는 컨테이너 (2318 x 1303) */
+  .stage {
+    position: relative;
+    width: 100%;
+    max-width: 1400px;
+    aspect-ratio: 2318 / 1303;
+    background-image: url("logic-bg.jpeg");
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+  }
+
+  /* 공통: 이미지 위 박스 위치에 맞춘 오버레이 */
+  .overlay {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    outline: none;
+    background: transparent;
+  }
+
+  /* 비밀번호 입력 필드 위치 - 이미지 속 텍스트를 완전히 덮도록 불투명 배경 사용 */
+  #password-field {
+    left: 37.14%;
+    top: 43.59%;
+    width: 39.48%;
+    height: 8.90%;
+    padding: 0 1.5%;
+    font-size: min(1.8vw, 26px);
+    color: #222;
+    background: #ffffff;
+    border: min(0.25vw, 3px) solid #000 !important;
+    cursor: text;
+  }
+  #password-field::placeholder {
+    color: #888;
+  }
+
+  /* 확인 버튼 위치 - 이미지 속 텍스트를 완전히 덮도록 불투명 배경 사용 */
+  #confirm-btn {
+    left: 51.29%;
+    top: 55.26%;
+    width: 14.11%;
+    height: 5.60%;
+    font-size: min(1.6vw, 22px);
+    color: #222;
+    cursor: pointer;
+    background: #ffffff;
+    border: min(0.25vw, 3px) solid #000 !important;
+    transition: background 0.15s ease;
+  }
+  #confirm-btn:hover {
+    background: #f0f0f0;
+  }
+  #confirm-btn:active {
+    background: #d9d9d9;
+  }
+
+  /* 회원가입/비밀번호 찾기 버튼 위치 - 이미지 속 텍스트를 완전히 덮도록 불투명 배경 사용 */
+  #signup-btn {
+    left: 47.15%;
+    top: 63.62%;
+    width: 22.31%;
+    height: 6.76%;
+    font-size: min(1.4vw, 20px);
+    color: #333;
+    cursor: pointer;
+    background: #ffffff;
+    border: min(0.25vw, 3px) solid #000 !important;
+    transition: background 0.15s ease;
+  }
+  #signup-btn:hover {
+    background: #f0f0f0;
+  }
+  #signup-btn:active {
+    background: #d9d9d9;
+  }
+
+  /* 안내 메시지 */
+  #message {
+    position: absolute;
+    left: 37.14%;
+    top: 33%;
+    width: 39.48%;
+    text-align: center;
+    font-size: min(1.5vw, 20px);
+    font-weight: bold;
+    min-height: 1.5em;
+  }
+  #message.error { color: #d90000; }
+  #message.success { color: #0057d9; }
+
+  /* 모달 (회원가입/비밀번호 찾기 클릭 시) */
+  .modal-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+  }
+  .modal-backdrop.open {
+    display: flex;
+  }
+  .modal-box {
+    background: #fff;
+    border-radius: 10px;
+    padding: 28px 32px;
+    max-width: 320px;
+    width: 85%;
+    text-align: center;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  }
+  .modal-box h3 {
+    margin-top: 0;
+    color: #222;
+  }
+  .modal-box p {
+    color: #444;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .modal-box button {
+    margin-top: 16px;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 6px;
+    background: #2563eb;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .modal-box button:hover {
+    background: #1d4ed8;
+  }
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <div id="message"></div>
+
+  <input
+    type="password"
+    id="password-field"
+    class="overlay"
+    placeholder="비밀번호 입력"
+    autocomplete="current-password"
+  />
+
+  <button id="confirm-btn" class="overlay" type="button">확인</button>
+
+  <button id="signup-btn" class="overlay" type="button">회원가입/비밀번호 찾기</button>
+</div>
+
+<div class="modal-backdrop" id="modal">
+  <div class="modal-box">
+    <h3>회원가입 / 비밀번호 찾기</h3>
+    <p>회원가입 또는 비밀번호 찾기 페이지로 이동합니다.<br>실제 서비스에서는 이 버튼이 해당 페이지로 연결됩니다.</p>
+    <button id="modal-close">닫기</button>
+  </div>
+</div>
+
+<script>
+  const passwordField = document.getElementById('password-field');
+  const confirmBtn = document.getElementById('confirm-btn');
+  const signupBtn = document.getElementById('signup-btn');
+  const message = document.getElementById('message');
+  const modal = document.getElementById('modal');
+  const modalClose = document.getElementById('modal-close');
+
+  // 데모용 정답 비밀번호 (실제 서비스에서는 서버 인증으로 교체)
+  const CORRECT_PASSWORD = '1234';
+
+  function showMessage(text, type) {
+    message.textContent = text;
+    message.className = type;
+  }
+
+  function handleConfirm() {
+    const value = passwordField.value.trim();
+
+    if (!value) {
+      showMessage('비밀번호를 입력해주세요.', 'error');
+      passwordField.focus();
+      return;
+    }
+
+    if (value === CORRECT_PASSWORD) {
+      showMessage('로그인 성공! 환영합니다.', 'success');
+      // 실제 서비스라면 여기서 페이지 이동 또는 API 호출
+      // window.location.href = '/dashboard';
+    } else {
+      showMessage('비밀번호가 올바르지 않습니다.', 'error');
+      passwordField.value = '';
+      passwordField.focus();
+    }
+  }
+
+  confirmBtn.addEventListener('click', handleConfirm);
+
+  // 엔터 키로도 확인 가능
+  passwordField.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      handleConfirm();
+    }
+  });
+
+  signupBtn.addEventListener('click', () => {
+    modal.classList.add('open');
+  });
+
+  modalClose.addEventListener('click', () => {
+    modal.classList.remove('open');
+  });
+
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.classList.remove('open');
+    }
+  });
+</script>
+
+</body>
+</html>
