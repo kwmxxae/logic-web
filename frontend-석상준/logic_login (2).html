@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LOGIC 로그인</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky-top:#1c5fd8;
+    --sky-mid:#3f8de8;
+    --sky-bottom:#8ec9f2;
+    --grass-dark:#1f7a1f;
+    --grass-mid:#2fa32f;
+    --grass-light:#4cc24c;
+    --panel-border:#333;
+  }
+
+  *{ box-sizing:border-box; }
+
+  html,body{
+    margin:0;
+    padding:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    font-family:'Noto Sans KR', sans-serif;
+  }
+
+  .stage{
+    position:relative;
+    width:100vw;
+    height:100vh;
+    background:linear-gradient(to bottom, var(--sky-top) 0%, var(--sky-mid) 45%, var(--sky-bottom) 78%);
+    overflow:hidden;
+  }
+
+  /* ---------- clouds ---------- */
+  .cloud{
+    position:absolute;
+    background:#ffffff;
+    border-radius:50%;
+    filter:blur(1px);
+    opacity:.92;
+  }
+  .cloud::before, .cloud::after{
+    content:"";
+    position:absolute;
+    background:inherit;
+    border-radius:50%;
+  }
+
+  /* ---------- rainbow ----------
+     True semicircle whose two feet sit on the ground line (same line
+     the grass starts on). Drawn in a 1200x675 viewBox (stretched to
+     fill the stage with preserveAspectRatio="none"), center (600,570),
+     so in stage percentages: center = 50% / 84.44%. Bands run from
+     radius 540 (outer, red) down to 360 (inner, violet), step 30. */
+  .rainbow-svg{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    pointer-events:none;
+    filter: blur(1px);
+    opacity:.92;
+  }
+
+  /* ---------- LOGIC letters ---------- */
+  .logic{
+    position:absolute;
+    top:0; left:0;
+    width:100%; height:100%;
+    pointer-events:none;
+  }
+  .logic span{
+    position:absolute;
+    font-family:'Permanent Marker', cursive;
+    font-size:clamp(48px, 8vw, 110px);
+    line-height:1;
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.08);
+    -webkit-text-stroke: 1px rgba(0,0,0,0.25);
+  }
+  /* Positions computed on the SAME circle as the rainbow arch
+     (center 50%/84.44%, mid-band radius 450 of 1200x675 viewBox),
+     evenly spaced at 150°/120°/90°/60°/30°, rotated to stay tangent
+     to the arc so the word visibly rides along the rainbow. */
+  .l-letter{ top:51.11%; left:17.53%; color:#e6241e; transform:translate(-50%,-50%) rotate(-60deg); }
+  .o-letter{ top:26.71%; left:31.25%; color:#f4d925; transform:translate(-50%,-50%) rotate(-30deg); }
+  .g-letter{ top:17.78%; left:50.00%; color:#3fd646; transform:translate(-50%,-50%) rotate(0deg);   }
+  .i-letter{ top:26.71%; left:68.75%; color:#1a3fd6; transform:translate(-50%,-50%) rotate(30deg);  }
+  .c-letter{ top:51.11%; left:82.48%; color:#7a1fa2; transform:translate(-50%,-50%) rotate(60deg);  }
+
+  /* ---------- login panel ---------- */
+  .login-panel{
+    position:absolute;
+    top:47%;
+    left:63%;
+    transform:translate(-50%,-50%);
+    width:min(46vw, 620px);
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+  }
+
+  .field, .btn{
+    background:#ffffff;
+    border:2px solid var(--panel-border);
+    border-radius:2px;
+  }
+
+  .field{
+    display:flex;
+    align-items:center;
+    padding:16px 20px;
+  }
+  .field input{
+    width:100%;
+    border:none;
+    outline:none;
+    font-size:20px;
+    font-family:'Noto Sans KR', sans-serif;
+    color:#222;
+    background:transparent;
+  }
+  .field input::placeholder{
+    color:#333;
+    opacity:1;
+  }
+
+  .btn{
+    text-align:center;
+    padding:14px 20px;
+    font-size:20px;
+    cursor:pointer;
+    user-select:none;
+    transition:background .15s ease, transform .05s ease;
+  }
+  .btn:hover{ background:#f2f2f2; }
+  .btn:active{ transform:scale(0.99); background:#e8e8e8; }
+
+  .btn-confirm{ width:36%; align-self:center; }
+  .btn-signup{ width:60%; align-self:center; }
+
+  /* ---------- grass ----------
+     Starts exactly at the rainbow's ground line (84.44%, same as the
+     circle's center y) and runs edge-to-edge to the bottom of the
+     viewport so it always fills the full width and height below it. */
+  .grass{
+    position:absolute;
+    left:0; right:0;
+    top:84.44%;
+    bottom:0;
+    z-index:5;
+  }
+</style>
+</head>
+<body>
+
+<div class="stage">
+
+  <!-- clouds -->
+  <div class="cloud" style="width:220px;height:70px; top:8%; left:70%;"></div>
+  <div class="cloud" style="width:160px;height:55px; top:14%; left:82%;"></div>
+  <div class="cloud" style="width:260px;height:80px; top:34%; left:60%;"></div>
+  <div class="cloud" style="width:300px;height:90px; top:52%; left:2%;"></div>
+  <div class="cloud" style="width:340px;height:100px; top:60%; left:40%;"></div>
+  <div class="cloud" style="width:260px;height:80px; top:70%; left:70%;"></div>
+  <div class="cloud" style="width:200px;height:65px; top:78%; left:12%;"></div>
+  <div class="cloud" style="width:220px;height:70px; top:80%; left:55%;"></div>
+
+  <!-- rainbow: true semicircle, both feet on the ground line -->
+  <svg class="rainbow-svg" viewBox="0 0 1200 675" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <g fill="none" stroke-linecap="round">
+      <path d="M 60,570 A 540,540 0 0 1 1140,570"  stroke="#e6423b" stroke-width="34"/>
+      <path d="M 90,570 A 510,510 0 0 1 1110,570"  stroke="#f0922f" stroke-width="34"/>
+      <path d="M 120,570 A 480,480 0 0 1 1080,570" stroke="#eeda3a" stroke-width="34"/>
+      <path d="M 150,570 A 450,450 0 0 1 1050,570" stroke="#45cf5e" stroke-width="34"/>
+      <path d="M 180,570 A 420,420 0 0 1 1020,570" stroke="#35c9c0" stroke-width="34"/>
+      <path d="M 210,570 A 390,390 0 0 1 990,570"  stroke="#2f7fe0" stroke-width="34"/>
+      <path d="M 240,570 A 360,360 0 0 1 960,570"  stroke="#4b2fc9" stroke-width="34"/>
+    </g>
+  </svg>
+
+  <!-- LOGIC letters -->
+  <div class="logic">
+    <span class="l-letter">L</span>
+    <span class="o-letter">O</span>
+    <span class="g-letter">G</span>
+    <span class="i-letter">I</span>
+    <span class="c-letter">C</span>
+  </div>
+
+  <!-- login panel -->
+  <div class="login-panel">
+    <div class="field">
+      <input id="pw" type="password" placeholder="비밀번호 입력">
+    </div>
+    <div class="btn btn-confirm" id="confirmBtn">확인</div>
+    <div class="btn btn-signup" id="signupBtn">회원가입/비밀번호 찾기</div>
+  </div>
+
+  <!-- grass -->
+  <svg class="grass" viewBox="0 0 1200 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="0" y="120" width="1200" height="80" fill="#237a23"></rect>
+    <g fill="#2fa32f">
+      <path d="M0,140 L15,60 L30,140 L45,70 L60,140 L75,55 L90,140 L105,65 L120,140 L135,50 L150,140
+               L165,68 L180,140 L195,58 L210,140 L225,72 L240,140 L255,52 L270,140 L285,66 L300,140
+               L315,56 L330,140 L345,74 L360,140 L375,60 L390,140 L405,64 L420,140 L435,54 L450,140
+               L465,70 L480,140 L495,58 L510,140 L525,66 L540,140 L555,52 L570,140 L585,72 L600,140
+               L615,58 L630,140 L645,66 L660,140 L675,54 L690,140 L705,70 L720,140 L735,60 L750,140
+               L765,64 L780,140 L795,56 L810,140 L825,72 L840,140 L855,58 L870,140 L885,66 L900,140
+               L915,52 L930,140 L945,74 L960,140 L975,60 L990,140 L1005,64 L1020,140 L1035,54 L1050,140
+               L1065,70 L1080,140 L1095,58 L1110,140 L1125,66 L1140,140 L1155,52 L1170,140 L1185,72 L1200,140
+               L1200,200 L0,200 Z"/>
+    </g>
+    <g fill="#4cc24c">
+      <path d="M0,150 L10,100 L22,150 L34,95 L46,150 L58,105 L70,150 L82,90 L94,150 L106,110 L118,150
+               L130,92 L142,150 L154,102 L166,150 L178,88 L190,150 L202,108 L214,150 L226,94 L238,150
+               L250,104 L262,150 L274,90 L286,150 L298,106 L310,150 L322,96 L334,150 L346,110 L358,150
+               L370,92 L382,150 L394,104 L406,150 L418,90 L430,150 L442,108 L454,150 L466,94 L478,150
+               L490,102 L502,150 L514,88 L526,150 L538,106 L550,150 L562,96 L574,150 L586,110 L598,150
+               L610,92 L622,150 L634,104 L646,150 L658,90 L670,150 L682,108 L694,150 L706,94 L718,150
+               L730,102 L742,150 L754,88 L766,150 L778,106 L790,150 L802,96 L814,150 L826,110 L838,150
+               L850,92 L862,150 L874,104 L886,150 L898,90 L910,150 L922,108 L934,150 L946,94 L958,150
+               L970,102 L982,150 L994,88 L1006,150 L1018,106 L1030,150 L1042,96 L1054,150 L1066,110 L1078,150
+               L1090,92 L1102,150 L1114,104 L1126,150 L1138,90 L1150,150 L1162,108 L1174,150 L1186,94 L1200,150
+               L1200,200 L0,200 Z"/>
+    </g>
+  </svg>
+
+</div>
+
+<script>
+  const pwInput = document.getElementById('pw');
+  const confirmBtn = document.getElementById('confirmBtn');
+  const signupBtn = document.getElementById('signupBtn');
+
+  function handleConfirm(){
+    const value = pwInput.value.trim();
+    if(!value){
+      pwInput.focus();
+      pwInput.style.borderBottom = '2px solid #e6241e';
+      setTimeout(()=>{ pwInput.style.borderBottom = 'none'; }, 800);
+      return;
+    }
+    alert('비밀번호가 입력되었습니다: ' + '*'.repeat(value.length));
+  }
+
+  confirmBtn.addEventListener('click', handleConfirm);
+  pwInput.addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter') handleConfirm();
+  });
+
+  signupBtn.addEventListener('click', ()=>{
+    alert('회원가입/비밀번호 찾기 페이지로 이동합니다.');
+  });
+</script>
+
+</body>
+</html>
