@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LOGIC 로그인</title>
+<link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Noto+Sans+KR:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky-top:#1f5fd6;
+    --sky-mid:#3f7fe0;
+    --sky-bottom:#6fa3ea;
+    --grass-dark:#2e7d1f;
+    --grass-light:#4caf28;
+    --panel-border:#333;
+  }
+
+  *{ box-sizing:border-box; }
+
+  html,body{
+    margin:0;
+    padding:0;
+    width:100%;
+    height:100%;
+    overflow-x:hidden;
+    font-family:'Noto Sans KR', sans-serif;
+  }
+
+  .stage{
+    position:relative;
+    width:100%;
+    min-height:100vh;
+    background:
+      linear-gradient(to bottom,
+        var(--sky-top) 0%,
+        var(--sky-mid) 45%,
+        var(--sky-bottom) 78%,
+        var(--sky-bottom) 100%);
+    overflow:hidden;
+  }
+
+  /* ---------- clouds ---------- */
+  .cloud{
+    position:absolute;
+    background:#fff;
+    border-radius:50%;
+    filter:blur(1px);
+    opacity:0.95;
+  }
+  .cloud::before, .cloud::after{
+    content:"";
+    position:absolute;
+    background:#fff;
+    border-radius:50%;
+  }
+
+  .cloud1{ width:260px; height:90px; top:8%; left:2%; }
+  .cloud1::before{ width:150px; height:120px; top:-60px; left:30px; }
+  .cloud1::after{ width:180px; height:100px; top:-40px; left:120px; }
+
+  .cloud2{ width:320px; height:100px; top:38%; left:-3%; }
+  .cloud2::before{ width:170px; height:130px; top:-65px; left:40px; }
+  .cloud2::after{ width:200px; height:110px; top:-45px; left:150px; }
+
+  .cloud3{ width:300px; height:90px; top:55%; right:2%; }
+  .cloud3::before{ width:160px; height:120px; top:-55px; left:40px; }
+  .cloud3::after{ width:190px; height:100px; top:-40px; left:150px; }
+
+  .cloud4{ width:340px; height:110px; top:78%; left:8%; }
+  .cloud4::before{ width:180px; height:140px; top:-70px; left:50px; }
+  .cloud4::after{ width:210px; height:110px; top:-45px; left:170px; }
+
+  .cloud5{ width:280px; height:90px; top:14%; right:8%; }
+  .cloud5::before{ width:150px; height:110px; top:-55px; left:30px; }
+  .cloud5::after{ width:170px; height:95px; top:-38px; left:120px; }
+
+  .cloud6{ width:260px; height:85px; top:68%; right:22%; }
+  .cloud6::before{ width:140px; height:105px; top:-50px; left:30px; }
+  .cloud6::after{ width:160px; height:90px; top:-35px; left:110px; }
+
+  /* ---------- grass ---------- */
+  .grass{
+    position:absolute;
+    bottom:0;
+    left:0;
+    width:100%;
+    height:16%;
+    background:linear-gradient(to bottom, var(--grass-light), var(--grass-dark));
+    clip-path: polygon(
+      0% 30%, 2% 10%, 4% 35%, 6% 5%, 8% 30%, 10% 15%, 12% 40%,
+      14% 10%, 16% 32%, 18% 8%, 20% 38%, 22% 12%, 24% 30%,
+      26% 5%, 28% 35%, 30% 15%, 32% 40%, 34% 10%, 36% 32%,
+      38% 8%, 40% 38%, 42% 12%, 44% 30%, 46% 5%, 48% 35%,
+      50% 15%, 52% 40%, 54% 10%, 56% 32%, 58% 8%, 60% 38%,
+      62% 12%, 64% 30%, 66% 5%, 68% 35%, 70% 15%, 72% 40%,
+      74% 10%, 76% 32%, 78% 8%, 80% 38%, 82% 12%, 84% 30%,
+      86% 5%, 88% 35%, 90% 15%, 92% 40%, 94% 10%, 96% 32%,
+      98% 8%, 100% 30%, 100% 100%, 0% 100%
+    );
+  }
+
+  /* ---------- rainbow (semicircle arc) ---------- */
+  .rainbow{
+    position:absolute;
+    top:40px;
+    left:50%;
+    transform:translateX(-50%);
+    width:1100px;
+    max-width:92vw;
+    height:auto;
+    opacity:0.9;
+    filter: blur(0.5px);
+    pointer-events:none;
+  }
+
+  /* ---------- LOGIC letters (single straight line) ---------- */
+  .logic-word{
+    position:absolute;
+    top:200px;
+    left:50%;
+    transform:translateX(-50%);
+    display:flex;
+    align-items:baseline;
+    gap:14px;
+    pointer-events:none;
+  }
+  .letter{
+    font-family:'Permanent Marker', cursive;
+    font-size:110px;
+    line-height:1;
+    -webkit-text-stroke: 1px rgba(0,0,0,0.15);
+    filter: drop-shadow(1px 2px 1px rgba(0,0,0,0.2));
+  }
+  .letter.L{ color:#e03b2e; }
+  .letter.O{ color:#f2d93e; }
+  .letter.G{ color:#4fd13a; }
+  .letter.I{ color:#1f3ee0; }
+  .letter.C{ color:#8a2ec9; }
+
+  /* ---------- login panel ---------- */
+  .login-panel{
+    position:absolute;
+    top:420px;
+    left:640px;
+    width:640px;
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+    z-index:5;
+  }
+
+  .field, .btn{
+    background:rgba(255,255,255,0.94);
+    border:2px solid var(--panel-border);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:22px;
+    color:#111;
+    cursor:default;
+  }
+
+  .field{
+    height:70px;
+    justify-content:flex-start;
+    padding:0 24px;
+  }
+  .field input{
+    border:none;
+    outline:none;
+    background:transparent;
+    font-size:22px;
+    width:100%;
+    font-family:'Noto Sans KR', sans-serif;
+    color:#111;
+  }
+  .field input::placeholder{
+    color:#333;
+    opacity:1;
+  }
+
+  .btn{
+    height:56px;
+    width:220px;
+    align-self:center;
+    background:rgba(255,255,255,0.94);
+    transition:background 0.15s ease, transform 0.1s ease;
+    user-select:none;
+  }
+  .btn:hover{ background:#f2f2f2; }
+  .btn:active{ transform:scale(0.98); }
+
+  .btn.secondary{
+    width:420px;
+    height:52px;
+    font-size:20px;
+  }
+
+  /* ---------- responsive ---------- */
+  @media (max-width: 1100px){
+    .login-panel{ left:50%; transform:translateX(-50%); top:60%; width:88%; max-width:600px; }
+    .rainbow{ width:700px; height:700px; top:-280px; left:-100px; }
+    .letter{ font-size:70px; }
+    .letter.I{ font-size:85px; }
+    .letter.L{ top:300px; left:80px; }
+    .letter.O{ top:190px; left:150px; }
+    .letter.G{ top:100px; left:250px; }
+    .letter.I{ top:60px; left:340px; }
+    .letter.C{ top:65px; left:420px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="stage" role="main">
+
+  <!-- clouds -->
+  <div class="cloud cloud1"></div>
+  <div class="cloud cloud2"></div>
+  <div class="cloud cloud3"></div>
+  <div class="cloud cloud4"></div>
+  <div class="cloud cloud5"></div>
+  <div class="cloud cloud6"></div>
+
+  <!-- rainbow (semicircle) -->
+  <svg class="rainbow" viewBox="0 0 1100 420" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <g fill="none" stroke-linecap="round">
+      <path d="M 30 400 A 520 520 0 0 1 1070 400" stroke="#c94fd8" stroke-width="26"/>
+      <path d="M 60 400 A 490 490 0 0 1 1040 400" stroke="#8a6ee0" stroke-width="26"/>
+      <path d="M 90 400 A 460 460 0 0 1 1010 400" stroke="#4f8fd8" stroke-width="26"/>
+      <path d="M 120 400 A 430 430 0 0 1 980 400"  stroke="#5fd0c0" stroke-width="26"/>
+      <path d="M 150 400 A 400 400 0 0 1 950 400"  stroke="#52c96b" stroke-width="26"/>
+      <path d="M 180 400 A 370 370 0 0 1 920 400"  stroke="#e0d84f" stroke-width="26"/>
+      <path d="M 210 400 A 340 340 0 0 1 890 400"  stroke="#e0a04f" stroke-width="26"/>
+      <path d="M 240 400 A 310 310 0 0 1 860 400"  stroke="#d85555" stroke-width="26"/>
+    </g>
+  </svg>
+
+  <!-- LOGIC lettering -->
+  <div class="logic-word" aria-hidden="true">
+    <span class="letter L">L</span>
+    <span class="letter O">O</span>
+    <span class="letter G">G</span>
+    <span class="letter I">I</span>
+    <span class="letter C">C</span>
+  </div>
+
+  <!-- grass -->
+  <div class="grass"></div>
+
+  <!-- login form -->
+  <form class="login-panel" onsubmit="return handleSubmit(event)">
+    <label class="field">
+      <input type="password" id="pw" placeholder="비밀번호 입력" autocomplete="off">
+    </label>
+
+    <button type="submit" class="btn">확인</button>
+
+    <button type="button" class="btn secondary" onclick="handleSignup()">회원가입/비밀번호 찾기</button>
+  </form>
+
+</div>
+
+<script>
+  function handleSubmit(e){
+    e.preventDefault();
+    const pw = document.getElementById('pw').value;
+    if(!pw){
+      alert('비밀번호를 입력해 주세요.');
+      return false;
+    }
+    alert('입력하신 비밀번호로 로그인을 시도합니다.');
+    return false;
+  }
+
+  function handleSignup(){
+    alert('회원가입 / 비밀번호 찾기 페이지로 이동합니다.');
+  }
+</script>
+
+</body>
+</html>
