@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LOGIC — IT 개발 동아리</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Pretendard:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg-soft: #f7f8fc;
+    --surface: #ffffff;
+    --surface-2: #f2f4fb;
+    --border: #e9ebf5;
+    --text: #2b2e3d;
+    --muted: #7c8098;
+    --blue: #5b7fff;
+    --purple: #a679ff;
+    --yellow: #ffc857;
+    --mint: #4ecdb0;
+    --gradient: linear-gradient(120deg, #5b7fff 0%, #a679ff 100%);
+    --gradient-soft: linear-gradient(120deg, #eef1ff 0%, #f3ecff 100%);
+    --radius: 20px;
+    --shadow: 0 10px 30px rgba(91,127,255,0.10);
+    --shadow-lg: 0 20px 50px rgba(91,127,255,0.16);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body {
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Pretendard', 'Malgun Gothic', sans-serif;
+    line-height:1.65;
+    overflow-x:hidden;
+  }
+  h1,h2,h3,h4 { font-family:'Baloo 2', 'Pretendard', sans-serif; letter-spacing:-0.01em; }
+  a { color:inherit; text-decoration:none; }
+  img { max-width:100%; display:block; }
+  ul { list-style:none; }
+  .container { max-width:1180px; margin:0 auto; padding:0 32px; }
+  .eyebrow {
+    font-family:'JetBrains Mono', monospace;
+    font-size:13px;
+    color:var(--blue);
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    display:flex; align-items:center; gap:10px;
+    font-weight:600;
+  }
+  .eyebrow::before { content:'✦'; color:var(--purple); font-size:13px; }
+  .btn {
+    display:inline-flex; align-items:center; gap:8px;
+    padding:15px 28px;
+    border-radius:999px;
+    font-weight:700;
+    font-size:15px;
+    cursor:pointer;
+    border:2px solid transparent;
+    transition:transform .2s ease, box-shadow .2s ease, background .2s ease;
+  }
+  .btn-primary { background:var(--gradient); color:#fff; box-shadow:var(--shadow-lg); }
+  .btn-primary:hover { transform:translateY(-3px) rotate(-0.5deg); box-shadow:0 22px 44px rgba(166,121,255,0.32); }
+  .btn-ghost { background:#fff; border:2px solid var(--border); color:var(--text); }
+  .btn-ghost:hover { border-color:var(--blue); color:var(--blue); transform:translateY(-2px); }
+
+  /* ---------------- Header ---------------- */
+  header {
+    position:sticky; top:0; z-index:100;
+    background:rgba(255,255,255,0.85);
+    backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--border);
+  }
+  .nav {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 32px;
+    max-width:1180px; margin:0 auto;
+  }
+  .logo { display:flex; align-items:center; gap:10px; font-weight:800; font-size:22px; }
+  .logo-mark {
+    width:38px; height:38px; border-radius:12px;
+    background:var(--gradient);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Baloo 2', sans-serif; font-size:18px; font-weight:700; color:#fff;
+    transform:rotate(-6deg);
+  }
+  .nav-links { display:flex; align-items:center; gap:34px; }
+  .nav-links a { font-size:15px; color:var(--muted); font-weight:600; transition:color .2s; }
+  .nav-links a:hover { color:var(--blue); }
+  .nav-cta { display:flex; align-items:center; gap:12px; }
+  .nav-cta .btn { padding:11px 20px; font-size:14px; }
+
+  /* ---------------- Hero ---------------- */
+  .hero {
+    position:relative;
+    min-height:88vh;
+    display:flex; align-items:center;
+    overflow:hidden;
+    background:var(--bg-soft);
+  }
+  .hero::before, .hero::after {
+    content:''; position:absolute; border-radius:50%; filter:blur(50px); opacity:0.55;
+  }
+  .hero::before { width:380px; height:380px; background:#c9d4ff; top:-120px; right:8%; }
+  .hero::after { width:320px; height:320px; background:#ffe3ac; bottom:-100px; left:4%; }
+  .hero-blob { position:absolute; width:260px; height:260px; border-radius:50%; background:#c9f5e9; filter:blur(50px); opacity:0.6; bottom:12%; right:22%; }
+  .hero-inner {
+    position:relative; z-index:2;
+    max-width:1180px; margin:0 auto; padding:0 32px;
+    width:100%;
+    display:grid; grid-template-columns: 1.05fr 0.95fr; gap:56px; align-items:center;
+  }
+  .hero-text .eyebrow { margin-bottom:20px; }
+  .hero-text h1 {
+    font-size:54px; font-weight:700; line-height:1.22;
+    margin-bottom:22px; color:#25283a;
+  }
+  .hero-text h1 span {
+    background:var(--gradient);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .hero-text p {
+    font-size:17px; color:var(--muted); max-width:470px; margin-bottom:32px;
+  }
+  .hero-actions { display:flex; gap:14px; flex-wrap:wrap; }
+  .hero-stats { display:flex; gap:34px; margin-top:44px; }
+  .hero-stat b { font-family:'Baloo 2',sans-serif; font-size:26px; display:block; color:#25283a; }
+  .hero-stat span { font-size:13px; color:var(--muted); font-weight:500; }
+
+  .hero-visual {
+    position:relative;
+    border-radius:26px;
+    background:#fff;
+    padding:22px;
+    box-shadow:var(--shadow-lg);
+    border:1px solid var(--border);
+    transform:rotate(1.2deg);
+  }
+  .code-window { border-radius:16px; overflow:hidden; border:1px solid var(--border); background:#fbfbff; transform:rotate(-1.2deg); }
+  .code-bar { display:flex; gap:7px; padding:12px 14px; background:var(--surface-2); border-bottom:1px solid var(--border); }
+  .dot { width:11px; height:11px; border-radius:50%; }
+  .dot.red{background:#ff8a80;} .dot.yellow{background:#ffd166;} .dot.green{background:#7ee0b0;}
+  .code-body { padding:22px; font-family:'JetBrains Mono', monospace; font-size:13px; color:#4a4f6a; line-height:2; }
+  .code-body .kw{color:#a679ff; font-weight:600;} .code-body .fn{color:#5b7fff; font-weight:600;} .code-body .str{color:#2fb88a;} .code-body .cm{color:#a3a8c0;}
+  .float-badge {
+    position:absolute; right:-16px; bottom:-16px;
+    background:var(--gradient); padding:14px 20px; border-radius:14px;
+    font-size:13px; font-weight:700; color:#fff;
+    box-shadow:var(--shadow-lg);
+    transform:rotate(3deg);
+  }
+
+  /* ---------------- Section shared ---------------- */
+  section { padding:100px 0; }
+  .section-head { text-align:center; max-width:620px; margin:0 auto 56px; }
+  .section-head .eyebrow { justify-content:center; margin-bottom:16px; }
+  .section-head h2 { font-size:34px; font-weight:700; margin-bottom:14px; color:#25283a; }
+  .section-head p { color:var(--muted); font-size:16px; }
+
+  /* ---------------- Features ---------------- */
+  .features { background:var(--bg-soft); }
+  .feature-grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:22px; }
+  .feature-card {
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:32px 26px;
+    box-shadow:var(--shadow);
+    transition:transform .25s ease, box-shadow .25s ease;
+  }
+  .feature-card:hover { transform:translateY(-6px) rotate(-0.6deg); box-shadow:var(--shadow-lg); }
+  .feature-icon {
+    width:52px; height:52px; border-radius:16px;
+    background:var(--gradient-soft);
+    display:flex; align-items:center; justify-content:center;
+    font-size:24px; margin-bottom:20px;
+  }
+  .feature-card h3 { font-size:18px; margin-bottom:10px; color:#25283a; }
+  .feature-card p { font-size:14px; color:var(--muted); }
+
+  /* ---------------- Projects (portfolio) ---------------- */
+  .project-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+  .project-card {
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    overflow:hidden;
+    display:flex; flex-direction:column;
+    box-shadow:var(--shadow);
+    transition:transform .25s ease, box-shadow .25s ease;
+  }
+  .project-card:hover { transform:translateY(-6px); box-shadow:var(--shadow-lg); }
+  .project-thumb {
+    height:150px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:42px;
+  }
+  .thumb-1 { background:linear-gradient(135deg,#eef1ff,#e6ecff); }
+  .thumb-2 { background:linear-gradient(135deg,#eafff8,#e3fbf1); }
+  .thumb-3 { background:linear-gradient(135deg,#fff3e0,#ffeadf); }
+  .project-body { padding:24px; flex:1; display:flex; flex-direction:column; }
+  .project-body h3 { font-size:17px; margin-bottom:8px; color:#25283a; }
+  .project-body p { font-size:14px; color:var(--muted); margin-bottom:18px; flex:1; }
+  .stack-tags { display:flex; flex-wrap:wrap; gap:8px; }
+  .stack-tag {
+    font-family:'JetBrains Mono', monospace;
+    font-size:11.5px;
+    padding:5px 11px;
+    border-radius:999px;
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    color:var(--blue);
+    font-weight:600;
+  }
+
+  /* ---------------- Updates ---------------- */
+  .updates-layout { display:grid; grid-template-columns:1.3fr 1fr; gap:50px; }
+  .update-list { display:flex; flex-direction:column; }
+  .update-item { display:flex; gap:20px; padding:22px 0; border-bottom:1px solid var(--border); }
+  .update-item:first-child { padding-top:0; }
+  .update-date { font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--muted); width:78px; flex-shrink:0; padding-top:3px; font-weight:600; }
+  .update-tag { display:inline-block; font-size:11px; font-family:'JetBrains Mono',monospace; padding:4px 10px; border-radius:999px; margin-bottom:8px; font-weight:600; }
+  .tag-notice { background:#eaf0ff; color:var(--blue); }
+  .tag-recruit { background:#f4ecff; color:var(--purple); }
+  .tag-event { background:#e6faf3; color:#2fb88a; }
+  .update-item h4 { font-size:15.5px; margin-bottom:4px; color:#25283a; }
+  .update-item span.desc { font-size:13.5px; color:var(--muted); }
+
+  .gallery-side { display:flex; flex-direction:column; gap:16px; }
+  .gallery-title { font-size:15px; font-weight:700; color:#25283a; margin-bottom:4px; }
+  .gallery-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+  .gallery-grid div { aspect-ratio:1; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:22px; border:1px solid var(--border); }
+  .g1{background:linear-gradient(135deg,#eef1ff,#e0e7ff);}
+  .g2{background:linear-gradient(135deg,#f4ecff,#ece0ff);}
+  .g3{background:linear-gradient(135deg,#eafff8,#dcf7ec);}
+  .g4{background:linear-gradient(135deg,#fff3e0,#ffe7cf);}
+  .g5{background:linear-gradient(135deg,#e6f6ff,#d8f0ff);}
+  .g6{background:linear-gradient(135deg,#fff0f3,#ffe1e8);}
+
+  /* ---------------- CTA banner ---------------- */
+  .cta-banner {
+    background:var(--gradient);
+    border-radius:28px;
+    padding:64px 48px;
+    text-align:center;
+    margin:0 32px;
+    max-width:1180px;
+    margin-inline:auto;
+    position:relative;
+    overflow:hidden;
+  }
+  .cta-banner h2 { font-size:32px; margin-bottom:14px; color:#fff; }
+  .cta-banner p { color:rgba(255,255,255,0.9); margin-bottom:30px; }
+  .cta-banner .btn-primary { background:#fff; color:#5b7fff; box-shadow:none; }
+  .cta-banner .btn-ghost { border-color:rgba(255,255,255,0.6); color:#fff; background:transparent; }
+  .cta-banner .hero-actions { justify-content:center; }
+
+  /* ---------------- Footer ---------------- */
+  footer { background:var(--bg-soft); border-top:1px solid var(--border); padding:70px 0 30px; }
+  .footer-grid { display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr; gap:40px; margin-bottom:50px; }
+  .footer-brand p { color:var(--muted); font-size:14px; margin-top:14px; max-width:280px; }
+  .footer-col h4 { font-size:14px; margin-bottom:16px; color:#25283a; font-weight:700; }
+  .footer-col ul li { margin-bottom:10px; }
+  .footer-col a { font-size:14px; color:var(--muted); transition:color .2s; }
+  .footer-col a:hover { color:var(--blue); }
+  .social-row { display:flex; gap:10px; margin-top:16px; }
+  .social-row a { width:38px; height:38px; border-radius:12px; border:1px solid var(--border); background:#fff; display:flex; align-items:center; justify-content:center; font-size:16px; }
+  .social-row a:hover { border-color:var(--blue); }
+  .footer-bottom { display:flex; justify-content:space-between; align-items:center; padding-top:24px; border-top:1px solid var(--border); font-size:13px; color:var(--muted); flex-wrap:wrap; gap:10px; }
+
+  /* ---------------- Responsive ---------------- */
+  @media (max-width: 980px) {
+    .nav-links, .nav-cta .btn-ghost { display:none; }
+    .hero-inner { grid-template-columns:1fr; }
+    .hero-visual { order:-1; }
+    .feature-grid { grid-template-columns:repeat(2,1fr); }
+    .project-grid { grid-template-columns:1fr; }
+    .updates-layout { grid-template-columns:1fr; }
+    .footer-grid { grid-template-columns:1fr 1fr; }
+  }
+  @media (max-width: 560px) {
+    .hero-text h1 { font-size:36px; }
+    .feature-grid { grid-template-columns:1fr; }
+    .footer-grid { grid-template-columns:1fr; }
+    .cta-banner { margin:0 16px; padding:44px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <div class="logo">
+      <div class="logo-mark">L</div>
+      LOGIC
+    </div>
+    <nav class="nav-links">
+      <a href="#about">소개</a>
+      <a href="#projects">프로젝트</a>
+      <a href="#updates">활동/공지</a>
+      <a href="#gallery">갤러리</a>
+      <a href="#footer">문의</a>
+    </nav>
+    <div class="nav-cta">
+      <a href="#" class="btn btn-ghost">활동 보러가기</a>
+      <a href="#" class="btn btn-primary">지원하기</a>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-blob"></div>
+  <div class="hero-inner">
+    <div class="hero-text">
+      <div class="eyebrow">IT · 개발 동아리</div>
+      <h1>코드를 짜는 순간,<br><span>LOGIC</span>이 시작돼요</h1>
+      <p>아이디어를 실제 서비스로 만드는 학내 개발 동아리예요. 웹, 앱, AI, 알고리즘까지 — 함께 만들고 함께 성장해요.</p>
+      <div class="hero-actions">
+        <a href="#" class="btn btn-primary">🚀 동아리 지원하기</a>
+        <a href="#projects" class="btn btn-ghost">▶ 활동 보러가기</a>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat"><b>120+</b><span>누적 부원</span></div>
+        <div class="hero-stat"><b>34</b><span>완료 프로젝트</span></div>
+        <div class="hero-stat"><b>8기</b><span>운영 중</span></div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="code-window">
+        <div class="code-bar">
+          <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+        </div>
+        <div class="code-body">
+<span class="cm">// logic/member.ts</span><br>
+<span class="kw">const</span> <span class="fn">joinClub</span> = (member) => {<br>
+&nbsp;&nbsp;member.skills.<span class="fn">push</span>(<span class="str">"Web"</span>, <span class="str">"AI"</span>);<br>
+&nbsp;&nbsp;member.team = <span class="str">"LOGIC"</span>;<br>
+&nbsp;&nbsp;<span class="kw">return</span> member.<span class="fn">grow</span>();<br>
+};<br><br>
+<span class="fn">joinClub</span>(<span class="kw">you</span>);
+        </div>
+      </div>
+      <div class="float-badge">✓ 8기 모집 중</div>
+    </div>
+  </div>
+</section>
+
+<section class="features" id="about">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow">WHY LOGIC</div>
+      <h2>동아리에서 얻어가는 것들</h2>
+      <p>딱딱한 스터디가 아니라, 함께 웃고 함께 만드는 공간이에요.</p>
+    </div>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🤝</div>
+        <h3>친목 도모</h3>
+        <p>정기 모임과 회식으로 같은 관심사를 가진 친구들과 끈끈하게 지내요.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💻</div>
+        <h3>프로젝트 경험</h3>
+        <p>학기마다 팀을 꾸려 실제 서비스를 기획부터 배포까지 만들어봐요.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎓</div>
+        <h3>선배 멘토링</h3>
+        <p>현업 개발자·대학원생 선배들이 코드 리뷰와 진로 상담을 해줘요.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🏆</div>
+        <h3>대회 & 해커톤</h3>
+        <p>교내외 해커톤, 공모전을 함께 준비하고 같이 수상의 기쁨을 나눠요.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="projects">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow">PORTFOLIO</div>
+      <h2>우리가 만든 프로젝트</h2>
+      <p>LOGIC 부원들이 직접 기획하고 개발한 결과물이에요.</p>
+    </div>
+    <div class="project-grid">
+      <div class="project-card">
+        <div class="project-thumb thumb-1">🗓️</div>
+        <div class="project-body">
+          <h3>동아리 일정 통합 관리 앱</h3>
+          <p>여러 동아리의 일정을 한 곳에서 확인하고 알림을 받을 수 있는 앱이에요.</p>
+          <div class="stack-tags">
+            <span class="stack-tag">React Native</span>
+            <span class="stack-tag">Firebase</span>
+            <span class="stack-tag">TypeScript</span>
+          </div>
+        </div>
+      </div>
+      <div class="project-card">
+        <div class="project-thumb thumb-2">🤖</div>
+        <div class="project-body">
+          <h3>캠퍼스 챗봇 도우미</h3>
+          <p>학사 정보와 학식 메뉴를 안내해주는 자연어 기반 캠퍼스 챗봇이에요.</p>
+          <div class="stack-tags">
+            <span class="stack-tag">Python</span>
+            <span class="stack-tag">FastAPI</span>
+            <span class="stack-tag">OpenAI API</span>
+          </div>
+        </div>
+      </div>
+      <div class="project-card">
+        <div class="project-thumb thumb-3">📊</div>
+        <div class="project-body">
+          <h3>스터디 매칭 플랫폼</h3>
+          <p>관심사와 시간대를 분석해 딱 맞는 스터디 그룹을 추천해줘요.</p>
+          <div class="stack-tags">
+            <span class="stack-tag">Next.js</span>
+            <span class="stack-tag">PostgreSQL</span>
+            <span class="stack-tag">Docker</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="features" id="updates">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow">LATEST UPDATES</div>
+      <h2>최근 활동 & 공지사항</h2>
+      <p>LOGIC은 지금도 신나게 움직이고 있어요.</p>
+    </div>
+    <div class="updates-layout">
+      <div class="update-list">
+        <div class="update-item">
+          <div class="update-date">07.05</div>
+          <div>
+            <span class="update-tag tag-recruit">모집</span>
+            <h4>LOGIC 8기 정기 부원 모집 시작</h4>
+            <span class="desc">7월 20일까지 지원서를 접수해요. 서류 + 편안한 티타임 면접으로 진행돼요.</span>
+          </div>
+        </div>
+        <div class="update-item">
+          <div class="update-date">06.28</div>
+          <div>
+            <span class="update-tag tag-event">활동</span>
+            <h4>교내 해커톤 'HackDay' 대상 수상</h4>
+            <span class="desc">캠퍼스 챗봇 프로젝트 팀이 대상을 수상했어요. 다같이 축하해주세요!</span>
+          </div>
+        </div>
+        <div class="update-item">
+          <div class="update-date">06.15</div>
+          <div>
+            <span class="update-tag tag-notice">공지</span>
+            <h4>여름방학 세미나 시간표 안내</h4>
+            <span class="desc">매주 화/목 저녁 7시, 프론트엔드 & 백엔드 트랙으로 편하게 참여해요.</span>
+          </div>
+        </div>
+        <div class="update-item">
+          <div class="update-date">06.02</div>
+          <div>
+            <span class="update-tag tag-notice">공지</span>
+            <h4>동아리방 리모델링 완료</h4>
+            <span class="desc">새 모니터와 화이트보드가 생겼어요. 언제든 놀러오세요!</span>
+          </div>
+        </div>
+      </div>
+      <div class="gallery-side">
+        <div class="gallery-title" id="gallery">활동 갤러리</div>
+        <div class="gallery-grid">
+          <div class="g1">📷</div>
+          <div class="g2">💡</div>
+          <div class="g3">🖥️</div>
+          <div class="g4">🎉</div>
+          <div class="g5">🧑‍💻</div>
+          <div class="g6">🏅</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="cta-banner">
+    <h2>지금, LOGIC과 함께 시작해요</h2>
+    <p>코딩 경험이 없어도 괜찮아요. 함께 배우고 함께 만들어가요.</p>
+    <div class="hero-actions">
+      <a href="#" class="btn btn-primary">지원서 작성하기</a>
+      <a href="#" class="btn btn-ghost">카카오톡 문의하기</a>
+    </div>
+  </div>
+</section>
+
+<footer id="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo">
+          <div class="logo-mark">L</div>
+          LOGIC
+        </div>
+        <p>실전 프로젝트로 성장하는 IT 개발 동아리예요. 함께 만들고, 함께 배우고, 함께 성장해요.</p>
+        <div class="social-row">
+          <a href="#">📸</a>
+          <a href="#">💬</a>
+          <a href="#">🐙</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>바로가기</h4>
+        <ul>
+          <li><a href="#about">소개</a></li>
+          <li><a href="#projects">프로젝트</a></li>
+          <li><a href="#updates">활동/공지</a></li>
+          <li><a href="#gallery">갤러리</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>문의</h4>
+        <ul>
+          <li><a href="mailto:logic@univ.ac.kr">logic@univ.ac.kr</a></li>
+          <li><a href="#">카카오톡 오픈채팅</a></li>
+          <li><a href="#">인스타그램 DM</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>동아리방</h4>
+        <ul>
+          <li><a href="#">학생회관 302호</a></li>
+          <li><a href="#">평일 14:00–22:00</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 LOGIC. All rights reserved.</span>
+      <span>Made by LOGIC Web Team</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,25 @@
+{
+  "name": "logic-web",
+  "version": "1.0.0",
+  "description": "> Integrated web platform repository for Team LOGIC's official homepage.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kwmxxae/logic-web.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kwmxxae/logic-web/issues"
+  },
+  "homepage": "https://github.com/kwmxxae/logic-web#readme",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "mysql2": "^3.23.1"
+  }
+}
