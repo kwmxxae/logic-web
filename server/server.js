@@ -12,7 +12,7 @@ const db = mysql.createConnection({
   port: 46427,
   user: 'test01',
   password: 'test1234',
-  database: 'logic-web',
+  database: 'railway',
   ssl: {
     rejectUnauthorized: false
   }
