@@ -40,7 +40,7 @@
     background: transparent;
   }
 
-  /* 비밀번호 입력 필드 위치 - 이미지 속 텍스트를 완전히 덮도록 불투명 배경 사용 */
+  /* 비밀번호 입력 필드 위치 */
   #password-field {
     left: 37.14%;
     top: 43.59%;
@@ -57,7 +57,7 @@
     color: #888;
   }
 
-  /* 확인 버튼 위치 - 이미지 속 텍스트를 완전히 덮도록 불투명 배경 사용 */
+  /* 확인 버튼 위치 */
   #confirm-btn {
     left: 51.29%;
     top: 55.26%;
@@ -76,8 +76,12 @@
   #confirm-btn:active {
     background: #d9d9d9;
   }
+  #confirm-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
 
-  /* 회원가입/비밀번호 찾기 버튼 위치 - 이미지 속 텍스트를 완전히 덮도록 불투명 배경 사용 */
+  /* 회원가입/비밀번호 찾기 버튼 위치 */
   #signup-btn {
     left: 47.15%;
     top: 63.62%;
@@ -111,7 +115,7 @@
   #message.error { color: #d90000; }
   #message.success { color: #0057d9; }
 
-  /* 모달 (회원가입/비밀번호 찾기 클릭 시) */
+  /* 모달 */
   .modal-backdrop {
     display: none;
     position: fixed;
@@ -191,15 +195,15 @@
   const modal = document.getElementById('modal');
   const modalClose = document.getElementById('modal-close');
 
-  // 데모용 정답 비밀번호 (실제 서비스에서는 서버 인증으로 교체)
-  const CORRECT_PASSWORD = '1234';
+  // 백엔드 API 주소 (배포 시 해당 서버 도메인 주소로 교체)
+  const API_URL = 'http://localhost:3000/api/login';
 
   function showMessage(text, type) {
     message.textContent = text;
     message.className = type;
   }
 
-  function handleConfirm() {
+  async function handleConfirm() {
     const value = passwordField.value.trim();
 
     if (!value) {
@@ -208,19 +212,45 @@
       return;
     }
 
-    if (value === CORRECT_PASSWORD) {
-      showMessage('로그인 성공! 환영합니다.', 'success');
-      window.location.href = 'dashboard.html';
-    } else {
-      showMessage('비밀번호가 올바르지 않습니다.', 'error');
-      passwordField.value = '';
-      passwordField.focus();
+    // 로딩 상태 처리
+    confirmBtn.disabled = true;
+    showMessage('인증 중입니다...', '');
+
+    try {
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ password: value })
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        // 로그인 성공 시 세션 저장소에 사용자 정보 보관 후 이동
+        sessionStorage.setItem('user', JSON.stringify(data.user));
+        showMessage(`환영합니다, ${data.user.realName}님!`, 'success');
+        
+        setTimeout(() => {
+          window.location.href = 'dashboard.html';
+        }, 1000);
+      } else {
+        // DB에 존재하는 비밀번호가 아닐 경우
+        showMessage(data.message || '비밀번호가 올바르지 않습니다.', 'error');
+        passwordField.value = '';
+        passwordField.focus();
+      }
+    } catch (error) {
+      console.error('로그인 에러:', error);
+      showMessage('서버 통신에 실패했습니다. 백엔드 상태를 확인하세요.', 'error');
+    } finally {
+      confirmBtn.disabled = false;
     }
   }
 
   confirmBtn.addEventListener('click', handleConfirm);
 
-  // 엔터 키로도 확인 가능
   passwordField.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
       handleConfirm();
