@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LOGIC 동아리</title>
+<link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky-top:#1f5fd6;
+    --sky-mid:#3f7fe0;
+    --sky-bottom:#eaf4ff;
+    --grass-dark:#2e7d1f;
+    --grass-light:#4caf28;
+    --ink:#1c2430;
+    --red:#e0483b;
+    --orange:#e8963e;
+    --yellow:#f2c93e;
+    --green:#3fbf5a;
+    --blue:#2f7fe0;
+    --indigo:#4a4fd1;
+    --violet:#9a4fd1;
+    --card-bg:#ffffff;
+    --muted:#57657a;
+  }
+
+  *{ box-sizing:border-box; }
+  html,body{
+    margin:0; padding:0;
+    font-family:'Noto Sans KR', sans-serif;
+    color:var(--ink);
+    background:var(--sky-bottom);
+  }
+  button, input, textarea{ font-family:inherit; }
+
+  /* ---------- top nav ---------- */
+  .nav{
+    position:sticky;
+    top:0;
+    z-index:30;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    padding:12px 28px;
+    background:linear-gradient(to bottom, var(--sky-top), var(--sky-mid));
+    box-shadow:0 3px 10px rgba(0,0,0,0.15);
+    flex-wrap:wrap;
+  }
+
+  .logo{
+    display:flex;
+    align-items:baseline;
+    gap:4px;
+    font-family:'Permanent Marker', cursive;
+    font-size:30px;
+    -webkit-text-stroke: 0.6px rgba(0,0,0,0.15);
+    cursor:pointer;
+  }
+  .logo span:nth-child(1){ color:var(--red); }
+  .logo span:nth-child(2){ color:var(--yellow); }
+  .logo span:nth-child(3){ color:var(--green); }
+  .logo span:nth-child(4){ color:var(--blue); }
+  .logo span:nth-child(5){ color:var(--violet); }
+
+  .tabs{
+    display:flex;
+    gap:4px;
+    background:rgba(255,255,255,0.12);
+    padding:4px;
+    border-radius:24px;
+  }
+  .tab-btn{
+    border:none;
+    background:transparent;
+    color:#fff;
+    padding:8px 16px;
+    border-radius:20px;
+    font-size:14px;
+    cursor:pointer;
+    transition:background 0.15s ease;
+  }
+  .tab-btn:hover{ background:rgba(255,255,255,0.18); }
+  .tab-btn.active{ background:#fff; color:var(--sky-top); font-weight:700; }
+
+  .nav-right{
+    display:flex;
+    align-items:center;
+    gap:14px;
+  }
+  .greeting{ color:#fff; font-size:14px; }
+  .greeting b{ font-weight:700; }
+
+  .icon-btn{
+    width:38px; height:38px;
+    border-radius:50%;
+    border:none;
+    background:rgba(255,255,255,0.18);
+    color:#fff;
+    font-size:17px;
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition:background 0.15s ease;
+  }
+  .icon-btn:hover{ background:rgba(255,255,255,0.32); }
+
+  .logout-btn{
+    border:1.5px solid rgba(255,255,255,0.7);
+    background:transparent;
+    color:#fff;
+    border-radius:20px;
+    padding:7px 16px;
+    font-size:13px;
+    cursor:pointer;
+    transition:background 0.15s ease;
+  }
+  .logout-btn:hover{ background:rgba(255,255,255,0.18); }
+
+  /* ---------- shared section shell ---------- */
+  .tab-panel{ display:none; }
+  .tab-panel.active{ display:block; }
+
+  .page{
+    max-width:1080px;
+    margin:0 auto;
+    padding:44px 24px 70px;
+  }
+  .page h2{
+    font-family:'Permanent Marker', cursive;
+    font-size:26px;
+    margin:0 0 6px;
+  }
+  .page .lede{
+    color:var(--muted);
+    font-size:14px;
+    margin:0 0 30px;
+  }
+
+  /* ---------- hero (home) ---------- */
+  .hero{
+    position:relative;
+    overflow:hidden;
+    padding:50px 32px 90px;
+    background:linear-gradient(to bottom, var(--sky-mid), #bcd9f7 78%, var(--sky-bottom));
+    text-align:center;
+  }
+  .hero-content{ position:relative; z-index:2; }
+  .hero-title{
+    font-family:'Permanent Marker', cursive;
+    font-size:28px;
+    color:var(--ink);
+    margin:0 0 8px;
+  }
+  .hero-sub{ font-size:15px; color:#33455c; margin:0 0 24px; }
+
+  .streak{
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    background:#ffffffcc;
+    border:2px solid var(--ink);
+    border-radius:30px;
+    padding:9px 20px;
+    font-size:14px;
+  }
+  .streak b{ color:var(--red); font-size:17px; }
+
+  /* ---------- realistic rainbow ---------- */
+  .rainbow-wrap{
+    position:absolute;
+    top:-70px;
+    left:50%;
+    transform:translateX(-50%);
+    width:1000px;
+    max-width:150vw;
+    pointer-events:none;
+    z-index:1;
+  }
+
+  /* ---------- dashboard grid ---------- */
+  .dashboard{
+    max-width:1080px;
+    margin:-50px auto 0;
+    padding:0 24px 60px;
+    position:relative;
+    z-index:3;
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:20px;
+  }
+
+  .card{
+    background:var(--card-bg);
+    border:2px solid var(--ink);
+    border-top-width:8px;
+    border-radius:14px;
+    padding:20px;
+    text-align:left;
+    cursor:pointer;
+    transition:transform 0.15s ease, box-shadow 0.15s ease;
+    box-shadow:0 4px 0 rgba(0,0,0,0.08);
+  }
+  .card:hover{ transform:translateY(-4px); box-shadow:0 8px 16px rgba(0,0,0,0.12); }
+
+  .card.c-red{ border-top-color:var(--red); }
+  .card.c-yellow{ border-top-color:var(--yellow); }
+  .card.c-green{ border-top-color:var(--green); }
+  .card.c-blue{ border-top-color:var(--blue); }
+  .card.c-violet{ border-top-color:var(--violet); }
+  .card.c-teal{ border-top-color:#2ec9b0; }
+
+  .card-icon{ font-size:28px; margin-bottom:8px; display:block; }
+  .card h3{ margin:0 0 6px; font-size:17px; }
+  .card p{ margin:0 0 12px; font-size:13.5px; color:var(--muted); line-height:1.5; }
+  .card .tag{
+    display:inline-block;
+    font-size:12px;
+    padding:3px 10px;
+    border-radius:12px;
+    background:#f1f4f8;
+    color:var(--muted);
+  }
+
+  .card.featured{
+    grid-column:span 2;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+  }
+  .card.featured .txt{ flex:1; }
+  .card.featured .cta{
+    border:2px solid var(--ink);
+    background:var(--yellow);
+    border-radius:10px;
+    padding:11px 18px;
+    font-weight:700;
+    font-size:13.5px;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+
+  /* ---------- about / timeline ---------- */
+  .timeline{ list-style:none; margin:0; padding:0; border-left:3px solid #dfe6ee; }
+  .timeline li{ position:relative; padding:0 0 26px 26px; }
+  .timeline li::before{
+    content:"";
+    position:absolute; left:-9px; top:2px;
+    width:14px; height:14px; border-radius:50%;
+    background:var(--violet); border:3px solid #fff; box-shadow:0 0 0 2px var(--violet);
+  }
+  .timeline .yr{ font-weight:700; color:var(--violet); font-size:13px; }
+  .timeline .desc{ font-size:14.5px; margin-top:2px; }
+
+  /* ---------- schedule list ---------- */
+  .event{
+    display:flex; align-items:center; gap:16px;
+    background:#fff; border:1.5px solid #e4e9ef; border-radius:12px;
+    padding:14px 18px; margin-bottom:12px;
+  }
+  .event .badge{
+    min-width:56px; text-align:center;
+    background:var(--sky-top); color:#fff; border-radius:10px; padding:6px 4px;
+    font-size:12px; line-height:1.2;
+  }
+  .event .badge b{ display:block; font-size:18px; }
+  .event .info h4{ margin:0 0 4px; font-size:15px; }
+  .event .info p{ margin:0; font-size:13px; color:var(--muted); }
+
+  /* ---------- gallery ---------- */
+  .gallery-grid{
+    display:grid; grid-template-columns:repeat(3, 1fr); gap:16px;
+  }
+  .photo{
+    border-radius:12px; height:150px;
+    display:flex; align-items:flex-end;
+    padding:10px 12px; color:#fff; font-size:13px; font-weight:700;
+    cursor:pointer; border:2px solid var(--ink);
+    text-shadow:0 1px 3px rgba(0,0,0,0.5);
+    background-size:cover;
+  }
+  .p1{ background:linear-gradient(135deg,#ff8a65,#e0483b); }
+  .p2{ background:linear-gradient(135deg,#4fd1c5,#2f7fe0); }
+  .p3{ background:linear-gradient(135deg,#f6d365,#e0483b); }
+  .p4{ background:linear-gradient(135deg,#84fab0,#3fbf5a); }
+  .p5{ background:linear-gradient(135deg,#a18cd1,#9a4fd1); }
+  .p6{ background:linear-gradient(135deg,#89f7fe,#2f7fe0); }
+
+  .lightbox{
+    position:fixed; inset:0; background:rgba(10,15,25,0.8);
+    display:flex; align-items:center; justify-content:center; z-index:100;
+  }
+  .lightbox.hidden{ display:none; }
+  .lightbox-inner{
+    width:min(560px, 88vw); border-radius:14px; overflow:hidden; background:#fff;
+  }
+  .lightbox-photo{ height:320px; }
+  .lightbox-caption{ padding:16px 18px; display:flex; justify-content:space-between; align-items:center; }
+  .lightbox-caption button{
+    border:none; background:#f1f4f8; border-radius:8px; padding:8px 14px; cursor:pointer;
+  }
+
+  /* ---------- board (자유게시판) ---------- */
+  .board-toolbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+  .board-count{ font-size:13px; color:var(--muted); }
+  .write-btn{
+    border:2px solid var(--ink); background:var(--yellow); border-radius:10px;
+    padding:9px 16px; font-weight:700; font-size:13.5px; cursor:pointer;
+  }
+
+  .write-form{
+    display:none;
+    background:#fbfcfe; border:1.5px solid #e4e9ef; border-radius:12px;
+    padding:18px; margin-bottom:20px; gap:10px; flex-direction:column;
+  }
+  .write-form.open{ display:flex; }
+  .write-form input, .write-form textarea{
+    border:1.5px solid #d7dee7; border-radius:8px; padding:10px 12px; font-size:14px; width:100%;
+  }
+  .write-form textarea{ min-height:90px; resize:vertical; }
+  .form-row{ display:flex; gap:10px; }
+  .form-actions{ display:flex; justify-content:flex-end; gap:8px; }
+  .btn-primary{
+    border:2px solid var(--ink); background:var(--green); color:#fff;
+    border-radius:8px; padding:9px 16px; font-weight:700; font-size:13.5px; cursor:pointer;
+  }
+  .btn-ghost{
+    border:1.5px solid #d7dee7; background:#fff; border-radius:8px; padding:9px 16px;
+    font-size:13.5px; cursor:pointer;
+  }
+
+  .post{
+    background:#fff; border:1.5px solid #e4e9ef; border-radius:12px;
+    padding:16px 18px; margin-bottom:12px; cursor:pointer;
+  }
+  .post-head{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; }
+  .post-title{ font-size:15.5px; font-weight:700; }
+  .post-meta{ font-size:12px; color:var(--muted); white-space:nowrap; }
+  .post-body{ display:none; margin-top:10px; font-size:14px; color:#33455c; line-height:1.6; white-space:pre-wrap; }
+  .post.open .post-body{ display:block; }
+  .post-actions{ display:flex; justify-content:flex-end; margin-top:8px; }
+  .post-actions button{
+    border:none; background:none; color:#c0392b; font-size:12.5px; cursor:pointer;
+  }
+  .empty-state{ text-align:center; color:var(--muted); padding:40px 0; font-size:14px; }
+
+  /* ---------- contact ---------- */
+  .contact-form{ max-width:520px; display:flex; flex-direction:column; gap:12px; }
+  .contact-form input, .contact-form textarea{
+    border:1.5px solid #d7dee7; border-radius:8px; padding:11px 14px; font-size:14px;
+  }
+  .contact-form textarea{ min-height:110px; resize:vertical; }
+  .success-msg{
+    display:none; background:#eafaf1; color:#1e7d47; border:1.5px solid #bce8cf;
+    border-radius:10px; padding:12px 16px; font-size:13.5px; margin-top:10px;
+  }
+  .success-msg.show{ display:block; }
+
+  /* ---------- footer ---------- */
+  .footer{
+    position:relative;
+    height:120px;
+    background:linear-gradient(to bottom, var(--grass-light), var(--grass-dark));
+    clip-path: polygon(
+      0% 26%, 3% 8%, 6% 30%, 9% 6%, 12% 26%, 15% 10%, 18% 32%,
+      21% 8%, 24% 28%, 27% 6%, 30% 32%, 33% 10%, 36% 24%,
+      39% 6%, 42% 30%, 45% 12%, 48% 34%, 51% 8%, 54% 26%,
+      57% 6%, 60% 32%, 63% 10%, 66% 24%, 69% 6%, 72% 30%,
+      75% 12%, 78% 34%, 81% 8%, 84% 26%, 87% 6%, 90% 32%,
+      93% 10%, 96% 24%, 100% 8%, 100% 100%, 0% 100%
+    );
+  }
+  .footer-note{
+    position:absolute; bottom:10px; width:100%; text-align:center;
+    color:#eafff0; font-size:12px; opacity:0.85;
+  }
+
+  @media (max-width: 900px){
+    .dashboard{ grid-template-columns:repeat(2,1fr); }
+    .card.featured{ grid-column:span 2; }
+    .gallery-grid{ grid-template-columns:repeat(2,1fr); }
+  }
+  @media (max-width: 640px){
+    .tabs{ order:3; width:100%; justify-content:center; }
+    .dashboard{ grid-template-columns:1fr; margin-top:-30px; }
+    .card.featured{ grid-column:span 1; flex-direction:column; align-items:flex-start; }
+    .gallery-grid{ grid-template-columns:1fr 1fr; }
+    .greeting{ display:none; }
+  }
+
+  @media (prefers-reduced-motion: reduce){ *{ transition:none !important; } }
+</style>
+</head>
+<body>
+
+<!-- top nav -->
+<div class="nav">
+  <div class="logo" onclick="showTab('home')">
+    <span>L</span><span>O</span><span>G</span><span>I</span><span>C</span>
+  </div>
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="home" onclick="showTab('home')">홈</button>
+    <button class="tab-btn" data-tab="about" onclick="showTab('about')">소개</button>
+    <button class="tab-btn" data-tab="schedule" onclick="showTab('schedule')">일정</button>
+    <button class="tab-btn" data-tab="gallery" onclick="showTab('gallery')">갤러리</button>
+    <button class="tab-btn" data-tab="board" onclick="showTab('board')">자유게시판</button>
+    <button class="tab-btn" data-tab="contact" onclick="showTab('contact')">문의</button>
+  </div>
+  <div class="nav-right">
+    <span class="greeting">안녕하세요, <b>지민</b>님</span>
+    <button class="icon-btn" title="알림" onclick="alert('새 알림이 없습니다.')">🔔</button>
+    <button class="logout-btn" onclick="handleLogout()">로그아웃</button>
+  </div>
+</div>
+
+<!-- ============ HOME ============ -->
+<section id="home" class="tab-panel active">
+  <div class="hero">
+    <div class="rainbow-wrap">
+      <svg viewBox="0 0 1000 380" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <linearGradient id="fadeMask" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#fff" stop-opacity="0"/>
+            <stop offset="12%" stop-color="#fff" stop-opacity="1"/>
+            <stop offset="88%" stop-color="#fff" stop-opacity="1"/>
+            <stop offset="100%" stop-color="#fff" stop-opacity="0"/>
+          </linearGradient>
+          <mask id="edgeFade">
+            <rect x="0" y="0" width="1000" height="380" fill="url(#fadeMask)"/>
+          </mask>
+          <filter id="softBlur" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="2.2"/>
+          </filter>
+        </defs>
+        <g fill="none" stroke-linecap="round" mask="url(#edgeFade)" filter="url(#softBlur)" opacity="0.92">
+          <path d="M 30 360 A 470 470 0 0 1 970 360" stroke="#e0483b" stroke-width="15"/>
+          <path d="M 47 360 A 453 453 0 0 1 953 360" stroke="#e8963e" stroke-width="15"/>
+          <path d="M 64 360 A 436 436 0 0 1 936 360" stroke="#f2c93e" stroke-width="15"/>
+          <path d="M 81 360 A 419 419 0 0 1 919 360" stroke="#3fbf5a" stroke-width="15"/>
+          <path d="M 98 360 A 402 402 0 0 1 902 360" stroke="#2f7fe0" stroke-width="15"/>
+          <path d="M 115 360 A 385 385 0 0 1 885 360" stroke="#4a4fd1" stroke-width="15"/>
+          <path d="M 132 360 A 368 368 0 0 1 868 360" stroke="#9a4fd1" stroke-width="15"/>
+        </g>
+        <g fill="none" stroke-linecap="round" mask="url(#edgeFade)" filter="url(#softBlur)" opacity="0.28">
+          <path d="M 5 360 A 495 495 0 0 1 995 360" stroke="#9a4fd1" stroke-width="10"/>
+          <path d="M 20 360 A 480 480 0 0 1 980 360" stroke="#4a4fd1" stroke-width="10"/>
+          <path d="M 158 360 A 342 342 0 0 1 842 360" stroke="#e0483b" stroke-width="10"/>
+        </g>
+      </svg>
+    </div>
+    <div class="hero-content">
+      <p class="hero-title">LOGIC 동아리에 오신 것을 환영합니다</p>
+      <p class="hero-sub">생각하는 힘을 함께 키우는 사람들, LOGIC</p>
+      <div class="streak">📅 다음 정기모임 <b>7월 10일(목) 5시</b></div>
+    </div>
+  </div>
+
+  <div class="dashboard">
+    <div class="card featured c-yellow" onclick="showTab('board')">
+      <div class="txt">
+        <span class="card-icon">📢</span>
+        <h3>공지사항 · 자유게시판</h3>
+        <p>정기모임 안내부터 부원들의 자유로운 이야기까지, 게시판에서 확인하세요.</p>
+        <span class="tag">새 글 2개</span>
+      </div>
+      <button class="cta" onclick="event.stopPropagation(); showTab('board')">게시판 가기</button>
+    </div>
+
+    <div class="card c-blue" onclick="showTab('about')">
+      <span class="card-icon">📘</span>
+      <h3>동아리 소개</h3>
+      <p>LOGIC은 논리적 사고와 문제 해결을 함께 탐구하는 동아리입니다.</p>
+      <span class="tag">연혁 · 활동목표</span>
+    </div>
+
+    <div class="card c-green" onclick="showTab('schedule')">
+      <span class="card-icon">📅</span>
+      <h3>활동 일정</h3>
+      <p>정기모임, 스터디, 세미나 등 다가오는 일정을 확인하세요.</p>
+      <span class="tag">이번 달 3건</span>
+    </div>
+
+    <div class="card c-violet" onclick="showTab('about')">
+      <span class="card-icon">🧑‍🤝‍🧑</span>
+      <h3>부원 소개</h3>
+      <p>함께하는 부원들과 각 기수별 활동 이력을 소개합니다.</p>
+      <span class="tag">현재 32명</span>
+    </div>
+
+    <div class="card c-teal" onclick="showTab('gallery')">
+      <span class="card-icon">📷</span>
+      <h3>활동 사진첩</h3>
+      <p>지난 모임과 행사에서 남긴 사진과 기록들을 모아봤어요.</p>
+      <span class="tag">새 사진 12장</span>
+    </div>
+
+    <div class="card c-red" onclick="showTab('contact')">
+      <span class="card-icon">✍️</span>
+      <h3>가입 신청 · 문의</h3>
+      <p>LOGIC과 함께하고 싶다면 지금 바로 문의해보세요.</p>
+      <span class="tag">상시 모집</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ABOUT ============ -->
+<section id="about" class="tab-panel">
+  <div class="page">
+    <h2>동아리 소개</h2>
+    <p class="lede">LOGIC은 논리적 사고, 문제 해결, 그리고 함께 성장하는 즐거움을 나누는 동아리입니다.</p>
+    <ul class="timeline">
+      <li><div class="yr">2022</div><div class="desc">LOGIC 동아리 창립, 첫 정기모임 진행</div></li>
+      <li><div class="yr">2023</div><div class="desc">교내 논리 퍼즐 대회 주최, 부원 20명 돌파</div></li>
+      <li><div class="yr">2024</div><div class="desc">타 학교 동아리와 연합 세미나 개최</div></li>
+      <li><div class="yr">2025</div><div class="desc">부원 32명, 정기 스터디 3개 팀 운영 중</div></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ SCHEDULE ============ -->
+<section id="schedule" class="tab-panel">
+  <div class="page">
+    <h2>활동 일정</h2>
+    <p class="lede">다가오는 LOGIC 동아리 활동을 확인하세요.</p>
+
+    <div class="event">
+      <div class="badge">7월<b>10</b></div>
+      <div class="info"><h4>정기모임</h4><p>목요일 오후 5시 · 3층 세미나실</p></div>
+    </div>
+    <div class="event">
+      <div class="badge">7월<b>20</b></div>
+      <div class="info"><h4>여름 MT</h4><p>일요일 오전 9시 · 강촌 리조트</p></div>
+    </div>
+    <div class="event">
+      <div class="badge">8월<b>01</b></div>
+      <div class="info"><h4>여름 세미나: 알고리즘과 논리</h4><p>토요일 오후 2시 · 온라인 (Zoom)</p></div>
+    </div>
+    <div class="event">
+      <div class="badge">8월<b>15</b></div>
+      <div class="info"><h4>신입 부원 환영회</h4><p>토요일 오후 6시 · 학생회관 대강당</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ GALLERY ============ -->
+<section id="gallery" class="tab-panel">
+  <div class="page">
+    <h2>활동 사진첩</h2>
+    <p class="lede">지난 모임과 행사의 순간들이에요. 사진을 눌러 크게 볼 수 있어요.</p>
+    <div class="gallery-grid">
+      <div class="photo p1" onclick="openLightbox('p1','2024 정기모임')">정기모임</div>
+      <div class="photo p2" onclick="openLightbox('p2','여름 MT')">여름 MT</div>
+      <div class="photo p3" onclick="openLightbox('p3','세미나 발표')">세미나 발표</div>
+      <div class="photo p4" onclick="openLightbox('p4','신입 환영회')">신입 환영회</div>
+      <div class="photo p5" onclick="openLightbox('p5','스터디 모임')">스터디 모임</div>
+      <div class="photo p6" onclick="openLightbox('p6','연합 세미나')">연합 세미나</div>
+    </div>
+  </div>
+</section>
+
+<!-- lightbox modal -->
+<div class="lightbox hidden" id="lightbox" onclick="closeLightbox(event)">
+  <div class="lightbox-inner" onclick="event.stopPropagation()">
+    <div class="lightbox-photo" id="lightboxPhoto"></div>
+    <div class="lightbox-caption">
+      <span id="lightboxCaption"></span>
+      <button onclick="closeLightbox()">닫기</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ BOARD (자유게시판) ============ -->
+<section id="board" class="tab-panel">
+  <div class="page">
+    <h2>자유게시판</h2>
+    <p class="lede">부원들과 자유롭게 이야기를 나눠보세요.</p>
+
+    <div class="board-toolbar">
+      <span class="board-count" id="boardCount">전체 0개의 글</span>
+      <button class="write-btn" onclick="toggleWriteForm()">✍️ 글쓰기</button>
+    </div>
+
+    <div class="write-form" id="writeForm">
+      <div class="form-row">
+        <input type="text" id="postName" placeholder="이름">
+        <input type="text" id="postTitle" placeholder="제목">
+      </div>
+      <textarea id="postContent" placeholder="내용을 입력하세요"></textarea>
+      <div class="form-actions">
+        <button class="btn-ghost" onclick="toggleWriteForm(false)">취소</button>
+        <button class="btn-primary" onclick="submitPost()">등록</button>
+      </div>
+    </div>
+
+    <div id="postList"></div>
+  </div>
+</section>
+
+<!-- ============ CONTACT ============ -->
+<section id="contact" class="tab-panel">
+  <div class="page">
+    <h2>가입 신청 · 문의</h2>
+    <p class="lede">LOGIC과 함께하고 싶다면 아래 양식을 남겨주세요. 담당 부원이 확인 후 연락드립니다.</p>
+    <form class="contact-form" onsubmit="return submitContact(event)">
+      <input type="text" id="cName" placeholder="이름" required>
+      <input type="email" id="cEmail" placeholder="이메일" required>
+      <textarea id="cMessage" placeholder="문의 내용을 입력하세요" required></textarea>
+      <button type="submit" class="btn-primary" style="align-self:flex-start;">문의 보내기</button>
+      <div class="success-msg" id="contactSuccess">문의가 접수되었습니다. 빠르게 답변드릴게요!</div>
+    </form>
+  </div>
+</section>
+
+<!-- footer -->
+<div class="footer">
+  <div class="footer-note">LOGIC 동아리 · 함께 생각하는 즐거움</div>
+</div>
+
+<script>
+  /* ---------- tab navigation ---------- */
+  function showTab(tab){
+    document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
+    document.getElementById(tab).classList.add('active');
+    document.querySelectorAll('.tab-btn').forEach(function(b){
+      b.classList.toggle('active', b.dataset.tab === tab);
+    });
+    window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
+  }
+
+  /* ---------- gallery lightbox ---------- */
+  function openLightbox(photoClass, caption){
+    var lb = document.getElementById('lightbox');
+    var photo = document.getElementById('lightboxPhoto');
+    photo.className = 'lightbox-photo photo ' + photoClass;
+    document.getElementById('lightboxCaption').textContent = caption;
+    lb.classList.remove('hidden');
+  }
+  function closeLightbox(e){
+    document.getElementById('lightbox').classList.add('hidden');
+  }
+
+  /* ---------- free board (in-memory) ---------- */
+  var posts = [
+    { id:3, name:'운영진', title:'[필독] 7월 정기모임 안내', content:'7월 10일(목) 오후 5시, 3층 세미나실에서 정기모임이 있습니다. 다들 늦지 않게 참석해주세요!', date:'07.05' },
+    { id:2, name:'김로직', title:'신입 부원 환영합니다 :)', content:'이번에 새로 들어온 신입 부원분들 환영해요! 다음 모임 때 반갑게 인사 나눠요~', date:'07.03' },
+    { id:1, name:'박논리', title:'스터디 팀원 구합니다', content:'알고리즘 스터디 같이 하실 분 있나요? 매주 화요일 저녁에 진행 예정입니다.', date:'06.29' }
+  ];
+  var nextId = 4;
+
+  function renderPosts(){
+    var list = document.getElementById('postList');
+    document.getElementById('boardCount').textContent = '전체 ' + posts.length + '개의 글';
+    if(posts.length === 0){
+      list.innerHTML = '<div class="empty-state">아직 등록된 글이 없어요. 첫 글을 남겨보세요!</div>';
+      return;
+    }
+    list.innerHTML = posts.map(function(p){
+      return (
+        '<div class="post" onclick="togglePost(' + p.id + ')" id="post-' + p.id + '">' +
+          '<div class="post-head">' +
+            '<span class="post-title">' + escapeHtml(p.title) + '</span>' +
+            '<span class="post-meta">' + escapeHtml(p.name) + ' · ' + p.date + '</span>' +
+          '</div>' +
+          '<div class="post-body">' + escapeHtml(p.content) + '</div>' +
+          '<div class="post-actions"><button onclick="deletePost(event, ' + p.id + ')">삭제</button></div>' +
+        '</div>'
+      );
+    }).join('');
+  }
+
+  function togglePost(id){
+    var el = document.getElementById('post-' + id);
+    el.classList.toggle('open');
+  }
+
+  function deletePost(e, id){
+    e.stopPropagation();
+    if(!confirm('이 글을 삭제할까요?')) return;
+    posts = posts.filter(function(p){ return p.id !== id; });
+    renderPosts();
+  }
+
+  function toggleWriteForm(force){
+    var form = document.getElementById('writeForm');
+    var open = typeof force === 'boolean' ? force : !form.classList.contains('open');
+    form.classList.toggle('open', open);
+    if(!open){
+      document.getElementById('postName').value = '';
+      document.getElementById('postTitle').value = '';
+      document.getElementById('postContent').value = '';
+    }
+  }
+
+  function submitPost(){
+    var name = document.getElementById('postName').value.trim();
+    var title = document.getElementById('postTitle').value.trim();
+    var content = document.getElementById('postContent').value.trim();
+    if(!name || !title || !content){
+      alert('이름, 제목, 내용을 모두 입력해주세요.');
+      return;
+    }
+    var today = new Date();
+    var dateStr = String(today.getMonth()+1).padStart(2,'0') + '.' + String(today.getDate()).padStart(2,'0');
+    posts.unshift({ id: nextId++, name: name, title: title, content: content, date: dateStr });
+    toggleWriteForm(false);
+    renderPosts();
+  }
+
+  function escapeHtml(str){
+    return str
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;');
+  }
+
+  /* ---------- contact form ---------- */
+  function submitContact(e){
+    e.preventDefault();
+    var name = document.getElementById('cName').value.trim();
+    var email = document.getElementById('cEmail').value.trim();
+    var msg = document.getElementById('cMessage').value.trim();
+    if(!name || !email || !msg){
+      alert('모든 항목을 입력해주세요.');
+      return false;
+    }
+    document.getElementById('contactSuccess').classList.add('show');
+    e.target.reset();
+    return false;
+  }
+
+  /* ---------- logout ---------- */
+  function handleLogout(){
+    if(confirm('로그아웃 하시겠습니까?')){
+      alert('로그인 화면으로 돌아갑니다.');
+      window.location.href = 'login.html';
+    }
+  }
+
+  renderPosts();
+</script>
+
+</body>
+</html>
