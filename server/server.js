@@ -8,10 +8,14 @@ app.use(express.json());
 
 // MySQL Workbench에서 확인/설정한 DB 정보 입력
 const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: 'your_password', // 본인 DB 비밀번호
-  database: 'your_database_name'
+  host: 'sakura.proxy.rlwy.net',
+  port: 46427, // 👈 [필수] Railway 외부 포트 추가!
+  user: 'test01',
+  password: 'test1234',
+  database: 'railway',
+  ssl: {
+    rejectUnauthorized: false // 👈 [필수] Railway SSL 접속 허용 설정!
+  }
 });
 
 db.connect((err) => {
@@ -28,6 +32,7 @@ app.get('/api/users', (req, res) => {
   });
 });
 
+// 내 백엔드 서버 실행 포트 (46427 대신 3000 사용)
 app.listen(3000, () => {
-  console.log('서버가 3000번 포트에서 실행 중입니다.');
+  console.log('서버가 http://localhost:3000 에서 실행 중입니다.');
 });
