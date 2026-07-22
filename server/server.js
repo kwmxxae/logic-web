@@ -3,36 +3,69 @@ const mysql = require('mysql2');
 const cors = require('cors');
 
 const app = express();
-app.use(cors()); // HTML에서 API 접근을 허용하기 위한 CORS 설정
+app.use(cors());
 app.use(express.json());
 
-// MySQL Workbench에서 확인/설정한 DB 정보 입력
+// Railway 클라우드 DB 연동 설정 (본인 DB 접속 정보 입력)
 const db = mysql.createConnection({
   host: 'sakura.proxy.rlwy.net',
-  port: 46427, // 👈 [필수] Railway 외부 포트 추가!
+  port: 46427,
   user: 'test01',
   password: 'test1234',
-  database: 'railway',
+  database: 'logic-web',
   ssl: {
-    rejectUnauthorized: false // 👈 [필수] Railway SSL 접속 허용 설정!
+    rejectUnauthorized: false
   }
 });
 
 db.connect((err) => {
-  if (err) console.error('DB 연결 실패:', err);
-  else console.log('MySQL 연결 성공!');
+  if (err) {
+    console.error('DB 연결 실패:', err);
+  } else {
+    console.log('MySQL 연결 성공!');
+  }
 });
 
-// HTML에서 데이터 요청할 API 엔드포인트
-app.get('/api/users', (req, res) => {
-  const sql = 'SELECT * FROM users';
-  db.query(sql, (err, results) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(results);
+// 🔐 DB 스키마 맞춤 로그인 API
+app.post('/api/login', (req, res) => {
+  const { password } = req.body;
+
+  if (!password) {
+    return res.status(400).json({ success: false, message: '비밀번호를 입력해주세요.' });
+  }
+
+  // users 테이블에서 입력받은 비밀번호와 일치하는 사용자 조회
+  const sql = 'SELECT user_id, student_id, real_name FROM users WHERE password = ?';
+  
+  db.query(sql, [password], (err, results) => {
+    if (err) {
+      console.error('DB 쿼리 에러:', err);
+      return res.status(500).json({ success: false, message: '서버 에러가 발생했습니다.' });
+    }
+
+    // DB에 일치하는 비밀번호가 존재하는 경우
+    if (results.length > 0) {
+      const user = results[0];
+      return res.json({
+        success: true,
+        message: '로그인 성공!',
+        user: {
+          userId: user.user_id,
+          studentId: user.student_id,
+          realName: user.real_name
+        }
+      });
+    } else {
+      // 일치하는 비밀번호가 없는 경우
+      return res.status(401).json({
+        success: false,
+        message: '비밀번호가 올바르지 않습니다.'
+      });
+    }
   });
 });
 
-// 내 백엔드 서버 실행 포트 (46427 대신 3000 사용)
-app.listen(3000, () => {
-  console.log('서버가 http://localhost:3000 에서 실행 중입니다.');
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`서버가 포트 ${PORT}에서 실행 중입니다.`);
 });
