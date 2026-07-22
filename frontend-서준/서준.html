@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>LOGIC 동아리</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+    overflow: hidden;
+  }
+
+  /* 하늘 배경 */
+  .sky {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    background: linear-gradient(to bottom, #1a5fd1 0%, #3b82f0 35%, #6fa8f5 70%, #a9cdf7 100%);
+    overflow: hidden;
+  }
+
+  /* 구름 */
+  .cloud {
+    position: absolute;
+    background: #ffffff;
+    border-radius: 50%;
+    opacity: 0.9;
+    filter: blur(1px);
+  }
+
+  /* 잔디 (화면 하단) */
+  .grass {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 18%;
+    background: linear-gradient(to bottom, #4caf1f 0%, #2f8a10 100%);
+    clip-path: polygon(
+      0% 40%, 2% 10%, 4% 45%, 6% 15%, 8% 50%, 10% 5%, 12% 40%,
+      14% 20%, 16% 55%, 18% 10%, 20% 45%, 22% 15%, 24% 50%,
+      26% 5%, 28% 40%, 30% 20%, 32% 55%, 34% 10%, 36% 45%,
+      38% 15%, 40% 50%, 42% 5%, 44% 40%, 46% 20%, 48% 55%,
+      50% 10%, 52% 45%, 54% 15%, 56% 50%, 58% 5%, 60% 40%,
+      62% 20%, 64% 55%, 66% 10%, 68% 45%, 70% 15%, 72% 50%,
+      74% 5%, 76% 40%, 78% 20%, 80% 55%, 82% 10%, 84% 45%,
+      86% 15%, 88% 50%, 90% 5%, 92% 40%, 94% 20%, 96% 55%,
+      98% 10%, 100% 45%, 100% 100%, 0% 100%
+    );
+  }
+
+  /* 무지개 (SVG로 처리) */
+  .rainbow {
+    position: absolute;
+    top: -140px;
+    left: -120px;
+    width: 900px;
+    height: 900px;
+  }
+
+  /* LOGIC 손글씨 텍스트 */
+  .logic-text {
+    position: absolute;
+    top: 8%;
+    left: 8%;
+    font-family: "Comic Sans MS", "Segoe Print", cursive;
+    font-weight: 900;
+    font-size: 90px;
+    -webkit-text-stroke: 2px rgba(0,0,0,0.15);
+  }
+  .logic-text span {
+    display: inline-block;
+    transform-origin: bottom center;
+  }
+  .l1 { color: #e6392a; transform: rotate(-25deg) translateY(40px); }
+  .l2 { color: #f6d227; transform: rotate(-12deg) translateY(-10px); }
+  .l3 { color: #3fd13f; transform: rotate(-3deg) translateY(-50px); }
+  .l4 { color: #1339d6; transform: rotate(4deg) translateY(-60px); }
+  .l5 { color: #7a1fb0; transform: rotate(12deg) translateY(-30px); }
+
+  /* 로그인 박스 영역 */
+  .login-area {
+    position: absolute;
+    top: 48%;
+    left: 55%;
+    width: 620px;
+  }
+
+  .input-box, .btn-box {
+    background: #ffffff;
+    border: 2px solid #333;
+    border-radius: 4px;
+    box-shadow: 3px 3px 0 rgba(0,0,0,0.15);
+  }
+
+  .input-box {
+    padding: 22px 20px;
+    font-size: 20px;
+    color: #333;
+    margin-bottom: 20px;
+  }
+
+  .btn-box {
+    text-align: center;
+    padding: 14px 0;
+    font-size: 20px;
+    color: #333;
+    cursor: pointer;
+    margin-bottom: 16px;
+    user-select: none;
+    transition: transform 0.05s ease;
+  }
+  .btn-box:active {
+    transform: translate(2px, 2px);
+    box-shadow: none;
+  }
+
+  #confirmBtn { width: 220px; margin-left: auto; margin-right: auto; }
+
+  #linkBtn { width: 400px; margin-left: auto; margin-right: auto; }
+
+</style>
+</head>
+<body>
+
+<div class="sky">
+
+  <!-- 구름들 -->
+  <div class="cloud" style="width:260px;height:90px; top:10%; left:60%;"></div>
+  <div class="cloud" style="width:180px;height:70px; top:8%;  left:75%;"></div>
+  <div class="cloud" style="width:320px;height:110px; top:30%; left:78%;"></div>
+  <div class="cloud" style="width:200px;height:80px; top:45%; left:5%;"></div>
+  <div class="cloud" style="width:260px;height:90px; top:55%; left:15%;"></div>
+  <div class="cloud" style="width:300px;height:100px; top:65%; left:60%;"></div>
+  <div class="cloud" style="width:200px;height:80px; top:78%; left:35%;"></div>
+
+  <!-- 무지개 -->
+  <svg class="rainbow" viewBox="0 0 900 900">
+    <g fill="none" stroke-width="26">
+      <path d="M 100 700 A 350 350 0 0 1 800 700" stroke="#c23fc9" stroke-width="30" opacity="0.6"/>
+      <path d="M 130 700 A 320 320 0 0 1 770 700" stroke="#3f6ec2" stroke-width="30" opacity="0.6"/>
+      <path d="M 160 700 A 290 290 0 0 1 740 700" stroke="#3fc2b0" stroke-width="30" opacity="0.6"/>
+      <path d="M 190 700 A 260 260 0 0 1 710 700" stroke="#3fc260" stroke-width="30" opacity="0.6"/>
+      <path d="M 220 700 A 230 230 0 0 1 680 700" stroke="#e8d93f" stroke-width="30" opacity="0.6"/>
+      <path d="M 250 700 A 200 200 0 0 1 650 700" stroke="#e88a3f" stroke-width="30" opacity="0.6"/>
+      <path d="M 280 700 A 170 170 0 0 1 620 700" stroke="#e83f3f" stroke-width="30" opacity="0.6"/>
+    </g>
+  </svg>
+
+  <!-- LOGIC 손글씨 로고 -->
+  <div class="logic-text">
+    <span class="l1">L</span><span class="l2">O</span><span class="l3">G</span><span class="l4">I</span><span class="l5">C</span>
+  </div>
+
+  <!-- 로그인 영역 -->
+  <div class="login-area">
+    <div class="input-box">
+      <input type="password" placeholder="비밀번호 입력" style="border:none; outline:none; width:100%; font-size:20px;">
+    </div>
+    <div class="btn-box" id="confirmBtn" onclick="handleLogin()">확인</div>
+    <div class="btn-box" id="linkBtn" onclick="alert('회원가입 / 비밀번호 찾기 페이지로 이동합니다.')">회원가입/비밀번호 찾기</div>
+  </div>
+
+  <!-- 잔디 -->
+  <div class="grass"></div>
+
+</div>
+
+<script>
+  function handleLogin(){
+    const pw = document.querySelector('.input-box input').value;
+    if(!pw){
+      alert('비밀번호를 입력해주세요.');
+      return;
+    }
+    alert('로그인 시도: ' + pw);
+    // 여기에 실제 로그인 처리 로직(fetch 등)을 연결하면 됩니다.
+  }
+</script>
+
+</body>
+</html>

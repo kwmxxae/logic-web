@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LOGIC 로그인</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Jua&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:100%; height:100%; overflow:hidden; }
+  body {
+    font-family: 'Jua', 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+    display:flex; align-items:center; justify-content:center;
+    background:#3a7bd5;
+  }
+
+  /* ---------- Stage (keeps everything proportional like the original image, 2400x1350) ---------- */
+  .stage {
+    position:relative;
+    width:100%;
+    aspect-ratio: 2400 / 1350;
+    max-height:100vh;
+    max-width:177.78vh;
+    margin:auto;
+    overflow:hidden;
+    box-shadow: 0 0 40px rgba(0,0,0,0.4);
+  }
+
+  /* ---------- Sky ---------- */
+  .sky {
+    position:absolute; inset:0;
+    background: linear-gradient(180deg,
+      #0d3a91 0%,
+      #1c58c4 18%,
+      #2f74e0 38%,
+      #4a8fe8 58%,
+      #79b3ee 78%,
+      #a9d0f4 92%,
+      #cfe6f9 100%);
+  }
+
+  /* ---------- Clouds (soft blurry white blobs, like the photo) ---------- */
+  .cloud {
+    position:absolute;
+    background:#fff;
+    border-radius:50%;
+    filter: blur(18px);
+    opacity:0.9;
+  }
+
+  /* ---------- Grass ---------- */
+  .grass {
+    position:absolute;
+    left:0; right:0; bottom:0;
+    height:14%;
+    background: linear-gradient(180deg, #3f9b1f 0%, #2f7d14 45%, #1f5c0d 100%);
+    clip-path: polygon(
+      0% 30%, 2% 10%, 4% 32%, 6% 5%, 8% 28%, 10% 2%, 12% 30%,
+      14% 8%, 16% 34%, 18% 0%, 20% 26%, 22% 10%, 24% 32%,
+      26% 4%, 28% 28%, 30% 12%, 32% 34%, 34% 2%, 36% 26%,
+      38% 8%, 40% 30%, 42% 4%, 44% 32%, 46% 10%, 48% 28%,
+      50% 0%, 52% 26%, 54% 8%, 56% 34%, 58% 4%, 60% 30%,
+      62% 10%, 64% 32%, 66% 2%, 68% 26%, 70% 8%, 72% 30%,
+      74% 4%, 76% 32%, 78% 10%, 80% 28%, 82% 0%, 84% 26%,
+      86% 8%, 88% 34%, 90% 4%, 92% 30%, 94% 10%, 96% 32%,
+      98% 2%, 100% 28%, 100% 100%, 0% 100%
+    );
+  }
+
+  /* ---------- Rainbow ---------- */
+  .rainbow-wrap {
+    position:absolute;
+    left:-4%; top:-16%;
+    width:66%; height:66%;
+  }
+  .rainbow-wrap svg { width:100%; height:100%; overflow:visible; }
+
+  /* ---------- LOGIC letters ---------- */
+  .logic-letter {
+    position:absolute;
+    font-family:'Fredoka', 'Jua', sans-serif;
+    font-weight:700;
+    -webkit-text-stroke: 1px rgba(0,0,0,0.05);
+  }
+  #letter-L { left:13.5%; top:44%; font-size:8.5vw; color:#e5231b; transform: rotate(28deg) scaleY(1.15); }
+  #letter-O { left:19.5%; top:29%; font-size:8vw; color:#ffd400; transform: rotate(-14deg); }
+  #letter-G { left:27%;   top:16%; font-size:8vw; color:#3cd12a; transform: rotate(-14deg); }
+  #letter-I { left:37%;   top:9%;  font-size:8.5vw; color:#0d1fd6; transform: rotate(-4deg) scaleY(1.15); }
+  #letter-C { left:44.5%; top:8.5%;font-size:8vw; color:#7d1fbf; transform: rotate(4deg); }
+
+  /* ---------- Login box elements ---------- */
+  .field {
+    position:absolute;
+    background:#fff;
+    border:2px solid #1a1a1a;
+  }
+  #pw-input-box { left:36%; top:44%; width:39%; height:8%; }
+  #pw-input-box input {
+    width:100%; height:100%;
+    border:none; outline:none;
+    background:transparent;
+    font-family:'Jua', 'Malgun Gothic', sans-serif;
+    font-size:1.6vw;
+    color:#1a1a1a;
+    padding:0 3%;
+  }
+  #pw-input-box input::placeholder { color:#1a1a1a; opacity:1; }
+
+  #confirm-btn {
+    left:51.5%; top:54.5%; width:14%; height:6%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.7vw; color:#1a1a1a;
+    cursor:pointer; user-select:none;
+  }
+  #confirm-btn:active { background:#eee; }
+
+  #signup-box {
+    left:46%; top:62.5%; width:24%; height:6%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.5vw; color:#1a1a1a;
+    cursor:pointer; user-select:none;
+  }
+  #signup-box:active { background:#eee; }
+</style>
+</head>
+<body>
+
+<div class="stage" id="stage">
+  <div class="sky"></div>
+
+  <!-- Clouds -->
+  <div class="cloud" style="width:14%; height:9%; left:0%; top:2%;"></div>
+  <div class="cloud" style="width:10%; height:7%; left:8%; top:6%;"></div>
+  <div class="cloud" style="width:18%; height:11%; left:68%; top:4%;"></div>
+  <div class="cloud" style="width:12%; height:8%; left:82%; top:1%;"></div>
+  <div class="cloud" style="width:16%; height:10%; left:2%; top:42%;"></div>
+  <div class="cloud" style="width:20%; height:12%; left:12%; top:52%;"></div>
+  <div class="cloud" style="width:14%; height:9%; left:28%; top:60%;"></div>
+  <div class="cloud" style="width:18%; height:11%; left:60%; top:48%;"></div>
+  <div class="cloud" style="width:22%; height:13%; left:74%; top:58%;"></div>
+  <div class="cloud" style="width:16%; height:10%; left:88%; top:44%;"></div>
+  <div class="cloud" style="width:12%; height:8%; left:30%; top:78%;"></div>
+  <div class="cloud" style="width:15%; height:9%; left:66%; top:74%;"></div>
+  <div class="cloud" style="width:10%; height:7%; left:0%; top:80%;"></div>
+
+  <!-- Rainbow -->
+  <div class="rainbow-wrap">
+    <svg viewBox="0 0 600 600" preserveAspectRatio="none">
+      <path d="M 40 560 A 500 500 0 0 1 1040 560" fill="none" stroke="#c23bb0" stroke-width="26" opacity="0.75"/>
+      <path d="M 70 560 A 465 465 0 0 1 1010 560" fill="none" stroke="#4b2ea8" stroke-width="26" opacity="0.75"/>
+      <path d="M 100 560 A 430 430 0 0 1 980 560"  fill="none" stroke="#1f6fd6" stroke-width="26" opacity="0.75"/>
+      <path d="M 130 560 A 395 395 0 0 1 950 560"  fill="none" stroke="#2fb6c9" stroke-width="26" opacity="0.75"/>
+      <path d="M 160 560 A 360 360 0 0 1 920 560"  fill="none" stroke="#3fc94b" stroke-width="26" opacity="0.75"/>
+      <path d="M 190 560 A 325 325 0 0 1 890 560"  fill="none" stroke="#f2e23c" stroke-width="26" opacity="0.75"/>
+      <path d="M 220 560 A 290 290 0 0 1 860 560"  fill="none" stroke="#f2963c" stroke-width="26" opacity="0.75"/>
+      <path d="M 250 560 A 255 255 0 0 1 830 560"  fill="none" stroke="#e5231b" stroke-width="26" opacity="0.75"/>
+    </svg>
+  </div>
+
+  <!-- LOGIC lettering -->
+  <div class="logic-letter" id="letter-L">L</div>
+  <div class="logic-letter" id="letter-O">O</div>
+  <div class="logic-letter" id="letter-G">G</div>
+  <div class="logic-letter" id="letter-I">I</div>
+  <div class="logic-letter" id="letter-C">C</div>
+
+  <div class="grass"></div>
+
+  <!-- Login UI -->
+  <div class="field" id="pw-input-box">
+    <input type="password" id="pw-input" placeholder="비밀번호 입력" autocomplete="off">
+  </div>
+
+  <div class="field" id="confirm-btn">확인</div>
+  <div class="field" id="signup-box">회원가입/비밀번호 찾기</div>
+</div>
+
+<script>
+  const pwInput = document.getElementById('pw-input');
+  const confirmBtn = document.getElementById('confirm-btn');
+  const signupBox = document.getElementById('signup-box');
+
+  function handleConfirm() {
+    const value = pwInput.value.trim();
+    if (!value) {
+      alert('비밀번호를 입력해 주세요.');
+      pwInput.focus();
+      return;
+    }
+    alert('입력하신 비밀번호로 로그인을 시도합니다.');
+  }
+
+  confirmBtn.addEventListener('click', handleConfirm);
+  pwInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') handleConfirm();
+  });
+
+  signupBox.addEventListener('click', () => {
+    alert('회원가입 / 비밀번호 찾기 페이지로 이동합니다.');
+  });
+</script>
+
+</body>
+</html>
