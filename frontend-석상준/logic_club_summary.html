@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LOGIC 동아리 - 한눈에 보기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Noto+Sans+KR:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#1c3f94;
+    --navy-dark:#132a67;
+    --paper:#f6f7fb;
+    --ink:#1f2330;
+    --ink-soft:#666c7d;
+    --line:#e3e5ec;
+    --red:#e6423b;
+    --orange:#f0922f;
+    --yellow:#eeda3a;
+    --green:#3fd646;
+    --teal:#35c9c0;
+    --blue:#2f7fe0;
+    --purple:#7a1fa2;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{
+    font-family:'Noto Sans KR', sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+  }
+  a{ color:inherit; text-decoration:none; }
+  ul{ list-style:none; }
+
+  /* ---------- brand stripe + logo ---------- */
+  .brand-stripe{
+    height:5px;
+    background:linear-gradient(90deg,
+      var(--red) 0%, var(--orange) 16%, var(--yellow) 32%, var(--green) 48%,
+      var(--teal) 64%, var(--blue) 80%, var(--purple) 100%);
+  }
+  .logo-bar{
+    background:#ffffff;
+    border-bottom:1px solid var(--line);
+    padding:14px 0 12px;
+  }
+  .logo-wrap{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:10px;
+  }
+  .logo-wrap .mark{
+    font-family:'Permanent Marker', cursive;
+    font-size:30px;
+    letter-spacing:1px;
+  }
+  .logo-wrap .mark span:nth-child(1){ color:var(--red); }
+  .logo-wrap .mark span:nth-child(2){ color:var(--yellow); -webkit-text-stroke:0.6px rgba(0,0,0,.15); }
+  .logo-wrap .mark span:nth-child(3){ color:var(--green); }
+  .logo-wrap .mark span:nth-child(4){ color:var(--blue); }
+  .logo-wrap .mark span:nth-child(5){ color:var(--purple); }
+  .logo-wrap .sub{
+    font-size:11px;
+    color:var(--ink-soft);
+    border-left:1px solid var(--line);
+    padding-left:10px;
+    letter-spacing:.5px;
+  }
+
+  /* ---------- page frame ---------- */
+  .wrap{
+    max-width:1180px;
+    margin:0 auto;
+    padding:26px 20px 40px;
+  }
+
+  /* one-line pitch */
+  .pitch{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+    flex-wrap:wrap;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:20px 24px;
+    margin-bottom:18px;
+  }
+  .pitch h1{
+    font-size:20px;
+    font-weight:900;
+    letter-spacing:-.3px;
+  }
+  .pitch h1 span{ color:var(--navy); }
+  .pitch p{
+    font-size:13px;
+    color:var(--ink-soft);
+    margin-top:4px;
+  }
+  .btn{
+    display:inline-block;
+    padding:11px 22px;
+    border-radius:6px;
+    font-size:13px;
+    font-weight:700;
+    cursor:pointer;
+    border:none;
+    white-space:nowrap;
+    transition:background .15s ease, transform .12s ease;
+  }
+  .btn:hover{ transform:translateY(-1px); }
+  .btn-primary{ background:var(--navy); color:#fff; }
+  .btn-primary:hover{ background:var(--navy-dark); }
+
+  /* dashboard grid: everything visible at a glance */
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:16px;
+  }
+  .card{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:20px;
+  }
+  .card h2{
+    font-size:13px;
+    font-weight:700;
+    color:var(--ink-soft);
+    letter-spacing:.5px;
+    margin-bottom:14px;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+
+  /* stat cards */
+  .stat-card{ text-align:center; }
+  .stat-card b{
+    display:block;
+    font-size:30px;
+    font-weight:900;
+    color:var(--navy);
+    line-height:1.1;
+  }
+  .stat-card span{ font-size:12px; color:var(--ink-soft); }
+
+  /* activities: span 2, compact list */
+  .card.activities{ grid-column:span 2; }
+  .activities ul{ display:flex; flex-direction:column; gap:10px; }
+  .activities li{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:13px;
+  }
+  .activities li .dot{
+    width:9px; height:9px;
+    border-radius:50%;
+    flex-shrink:0;
+  }
+  .activities li b{ font-weight:700; }
+  .activities li span{ color:var(--ink-soft); margin-left:auto; font-size:12px; white-space:nowrap; }
+
+  /* next event: span 2 */
+  .card.event{ grid-column:span 2; display:flex; gap:16px; align-items:center; }
+  .event-date{
+    flex-shrink:0;
+    width:64px; height:64px;
+    border-radius:10px;
+    background:var(--paper);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+  }
+  .event-date b{ font-size:20px; color:var(--navy); font-weight:900; line-height:1; }
+  .event-date span{ font-size:10px; color:var(--ink-soft); }
+  .event-body h3{ font-size:14px; font-weight:800; margin-bottom:4px; }
+  .event-body p{ font-size:12px; color:var(--ink-soft); }
+  .event-tag{
+    display:inline-block;
+    margin-top:6px;
+    font-size:11px;
+    font-weight:700;
+    padding:3px 10px;
+    border-radius:12px;
+    background:#e8f7ec;
+    color:var(--green);
+  }
+
+  /* recruitment card: span full */
+  .card.recruit{
+    grid-column:span 4;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+    flex-wrap:wrap;
+    background:var(--navy);
+    color:#fff;
+    border:none;
+  }
+  .recruit h2{ color:#dbe3fb; }
+  .recruit-info b{ display:block; font-size:17px; font-weight:800; margin-bottom:6px; }
+  .recruit-info span{ font-size:12px; color:#c3ceec; }
+  .recruit .btn-primary{ background:#fff; color:var(--navy); }
+  .recruit .btn-primary:hover{ background:#eef2ff; }
+
+  /* contact/crew card: span 2 */
+  .card.crew{ grid-column:span 2; }
+  .crew-list{ display:flex; gap:14px; flex-wrap:wrap; }
+  .crew-item{ text-align:center; width:64px; }
+  .crew-avatar{
+    width:44px; height:44px;
+    margin:0 auto 6px;
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    color:#fff;
+    font-family:'Permanent Marker', cursive;
+    font-size:15px;
+  }
+  .crew-item b{ display:block; font-size:11px; font-weight:700; }
+  .crew-item span{ font-size:10px; color:var(--ink-soft); }
+
+  .card.contact{ grid-column:span 2; }
+  .contact-list{ display:flex; flex-direction:column; gap:10px; font-size:13px; }
+  .contact-list li{ display:flex; justify-content:space-between; }
+  .contact-list li b{ color:var(--ink-soft); font-weight:500; }
+  .contact-list li span{ font-weight:700; }
+
+  /* free board card */
+  .card.board{ grid-column:span 2; }
+  .board-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:14px;
+  }
+  .board-head h2{ margin-bottom:0; }
+  .board-head a{
+    font-size:11px;
+    font-weight:700;
+    color:var(--navy);
+  }
+  .board-head a:hover{ text-decoration:underline; }
+  .board-list{ display:flex; flex-direction:column; }
+  .board-list li{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:8px 0;
+    border-bottom:1px solid var(--line);
+    font-size:12.5px;
+    cursor:pointer;
+  }
+  .board-list li:last-child{ border-bottom:none; }
+  .board-list li:hover .board-title{ color:var(--navy); text-decoration:underline; }
+  .board-list .board-badge{
+    flex-shrink:0;
+    font-size:10px;
+    font-weight:700;
+    padding:2px 7px;
+    border-radius:3px;
+    color:#fff;
+  }
+  .board-list .board-title{
+    flex:1;
+    min-width:0;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    color:var(--ink);
+  }
+  .board-list .board-meta{
+    flex-shrink:0;
+    font-size:11px;
+    color:var(--ink-soft);
+    white-space:nowrap;
+  }
+
+  footer{
+    text-align:center;
+    font-size:11px;
+    color:var(--ink-soft);
+    padding:20px 0 30px;
+  }
+
+  @media (max-width: 860px){
+    .grid{ grid-template-columns:repeat(2,1fr); }
+    .card.activities, .card.event, .card.board, .card.crew, .card.contact{ grid-column:span 2; }
+    .card.recruit{ grid-column:span 2; }
+  }
+  @media (max-width: 520px){
+    .grid{ grid-template-columns:1fr; }
+    .card.activities, .card.event, .card.board, .card.recruit, .card.crew, .card.contact{ grid-column:span 1; }
+    .pitch{ flex-direction:column; align-items:flex-start; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="brand-stripe"></div>
+  <div class="logo-bar">
+    <div class="logo-wrap">
+      <div class="mark"><span>L</span><span>O</span><span>G</span><span>I</span><span>C</span></div>
+      <div class="sub">UNIVERSITY CLUB</div>
+    </div>
+  </div>
+
+  <div class="wrap">
+
+    <div class="pitch">
+      <div>
+        <h1>생각의 회로를 여는 사람들, <span>LOGIC</span></h1>
+        <p>알고리즘·토론·해커톤으로 논리적 사고를 훈련하는 교내 동아리</p>
+      </div>
+      <a href="#" class="btn btn-primary" id="topApply">지원하기</a>
+    </div>
+
+    <div class="grid">
+
+      <!-- stats: 4 small cards -->
+      <div class="card stat-card"><h2>회원</h2><b>73</b><span>명 활동중</span></div>
+      <div class="card stat-card"><h2>연차</h2><b>7</b><span>년차 동아리</span></div>
+      <div class="card stat-card"><h2>세션</h2><b>142</b><span>회 누적 진행</span></div>
+      <div class="card stat-card"><h2>수상</h2><b>9</b><span>회 대회 입상</span></div>
+
+      <!-- activities -->
+      <div class="card activities">
+        <h2>주요 활동</h2>
+        <ul>
+          <li><span class="dot" style="background:var(--red);"></span><b>알고리즘 스터디</b><span>화 19:00</span></li>
+          <li><span class="dot" style="background:var(--orange);"></span><b>토론 배틀</b><span>격주 목 19:30</span></li>
+          <li><span class="dot" style="background:var(--green);"></span><b>연합 해커톤</b><span>6월·12월</span></li>
+          <li><span class="dot" style="background:var(--blue);"></span><b>보드게임 나이트</b><span>매월 마지막 금</span></li>
+        </ul>
+      </div>
+
+      <!-- next event -->
+      <div class="card event">
+        <div class="event-date"><b>18</b><span>7월</span></div>
+        <div class="event-body">
+          <h3>2026 여름 알고리즘 부트캠프</h3>
+          <p>신입부원 대상 3주 완성 기초 알고리즘 캠프</p>
+          <span class="event-tag">모집중</span>
+        </div>
+      </div>
+
+      <!-- recruitment banner -->
+      <div class="card recruit">
+        <div class="recruit-info">
+          <h2>모집 안내</h2>
+          <b>2026학년도 2학기 신입부원 모집중</b>
+          <span>07.08 ~ 07.25 · 전 학년·전공 지원 가능 · 서류+인터뷰</span>
+        </div>
+        <a href="#" class="btn btn-primary" id="bottomApply">지원서 작성하기</a>
+      </div>
+
+      <!-- free board -->
+      <div class="card board">
+        <div class="board-head">
+          <h2>자유게시판</h2>
+          <a href="#" id="boardMore">더보기 &gt;</a>
+        </div>
+        <ul class="board-list">
+          <li data-title="이번 여름 부트캠프 다들 신청하셨나요?">
+            <span class="board-badge" style="background:var(--red);">인기</span>
+            <span class="board-title">이번 여름 부트캠프 다들 신청하셨나요?</span>
+            <span class="board-meta">김도현 · 07.08</span>
+          </li>
+          <li data-title="동아리방 에어컨 또 고장난거같아요 ㅠㅠ">
+            <span class="board-badge" style="background:var(--ink-soft);">일반</span>
+            <span class="board-title">동아리방 에어컨 또 고장난거같아요 ㅠㅠ</span>
+            <span class="board-meta">이서연 · 07.07</span>
+          </li>
+          <li data-title="지난주 토론 배틀 녹화본 어디서 볼 수 있나요">
+            <span class="board-badge" style="background:var(--ink-soft);">질문</span>
+            <span class="board-title">지난주 토론 배틀 녹화본 어디서 볼 수 있나요</span>
+            <span class="board-meta">박준영 · 07.06</span>
+          </li>
+          <li data-title="신입부원 환영합니다! 자기소개 여기에 남겨주세요">
+            <span class="board-badge" style="background:var(--green);">공지</span>
+            <span class="board-title">신입부원 환영합니다! 자기소개 여기에 남겨주세요</span>
+            <span class="board-meta">최민지 · 07.05</span>
+          </li>
+          <li data-title="같이 스터디할 팀원 구합니다 (백준 골드 이상)">
+            <span class="board-badge" style="background:var(--ink-soft);">모집</span>
+            <span class="board-title">같이 스터디할 팀원 구합니다 (백준 골드 이상)</span>
+            <span class="board-meta">정하늘 · 07.04</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- crew -->
+      <div class="card crew">
+        <h2>운영진</h2>
+        <div class="crew-list">
+          <div class="crew-item"><div class="crew-avatar" style="background:var(--red);">회</div><b>김도현</b><span>회장</span></div>
+          <div class="crew-item"><div class="crew-avatar" style="background:var(--orange);">부</div><b>이서연</b><span>부회장</span></div>
+          <div class="crew-item"><div class="crew-avatar" style="background:var(--green);">기</div><b>박준영</b><span>기획</span></div>
+          <div class="crew-item"><div class="crew-avatar" style="background:var(--blue);">홍</div><b>최민지</b><span>홍보</span></div>
+          <div class="crew-item"><div class="crew-avatar" style="background:var(--purple);">총</div><b>정하늘</b><span>총무</span></div>
+        </div>
+      </div>
+
+      <!-- contact -->
+      <div class="card contact">
+        <h2>문의</h2>
+        <ul class="contact-list">
+          <li><b>이메일</b><span>logic.club@university.ac.kr</span></li>
+          <li><b>장소</b><span>학생회관 3층 동아리방</span></li>
+          <li><b>인스타그램</b><span>@logic.univ</span></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>&copy; 2026 LOGIC University Club · 본 페이지는 데모용으로 제작된 정적 화면입니다</footer>
+
+<script>
+  function goApply(){
+    alert('지원서 작성 페이지로 이동합니다. (데모)');
+  }
+  document.getElementById('topApply').addEventListener('click', e=>{ e.preventDefault(); goApply(); });
+  document.getElementById('bottomApply').addEventListener('click', e=>{ e.preventDefault(); goApply(); });
+
+  document.getElementById('boardMore').addEventListener('click', e=>{
+    e.preventDefault();
+    alert('자유게시판 전체 목록으로 이동합니다. (데모)');
+  });
+  document.querySelectorAll('.board-list li').forEach(li=>{
+    li.addEventListener('click', ()=>{
+      alert('게시글로 이동합니다: ' + li.dataset.title);
+    });
+  });
+</script>
+
+</body>
+</html>
