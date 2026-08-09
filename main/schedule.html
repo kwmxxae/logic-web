@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>활동 일정 · LOGIC 동아리</title>
+<script src="js/schedule.js" defer></script>
+<link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/schedule.css">
+</head>
+<body>
+
+<!-- top nav -->
+<div class="nav">
+  <a class="logo" href="home.html">
+    <span>L</span><span>O</span><span>G</span><span>I</span><span>C</span>
+  </a>
+  <div class="tabs">
+    <a class="tab-btn" href="home.html">홈</a>
+    <a class="tab-btn" href="dashboard.html">소개</a>
+    <a class="tab-btn active" href="schedule.html">일정</a>
+    <a class="tab-btn" href="gallery.html">갤러리</a>
+    <a class="tab-btn" href="notice.html">공지사항</a>
+    <a class="tab-btn" href="board.html">자유게시판</a>
+    <a class="tab-btn" href="dashboard.html">문의</a>
+  </div>
+  <div class="nav-right">
+    <span class="greeting">안녕하세요, <b>지민</b>님</span>
+    <button class="icon-btn" title="알림" onclick="alert('새 알림이 없습니다.')">🔔</button>
+    <button class="logout-btn" onclick="handleLogout()">로그아웃</button>
+  </div>
+</div>
+
+<main class="content">
+<!-- ============ SCHEDULE ============ -->
+<section class="page">
+  <h2>활동 일정</h2>
+  <p class="lede">다가오는 LOGIC 동아리 활동을 확인하세요.</p>
+
+  <div class="board-toolbar">
+    <span class="board-count" id="eventCount">총 0개의 일정</span>
+    <button class="write-btn" onclick="openAddEvent()">＋ 일정 추가</button>
+  </div>
+
+  <div class="write-form" id="eventForm">
+    <h3 id="eventFormTitle">새 일정 추가</h3>
+    <div class="form-row">
+      <input type="date" id="eventDate">
+      <input type="text" id="eventTitle" placeholder="일정 제목 (예: 정기모임)">
+    </div>
+    <input type="text" id="eventInfo" placeholder="상세 정보 (예: 목요일 오후 5시 · 3층 세미나실)">
+    <div class="form-actions">
+      <button class="btn-ghost" onclick="toggleEventForm(false)">취소</button>
+      <button class="btn-primary" id="eventSubmitBtn" onclick="submitEvent()">등록</button>
+    </div>
+  </div>
+
+  <div id="eventList"></div>
+</section>
+</main>
+
+<!-- footer -->
+<div class="footer">
+  <div class="footer-note">LOGIC 동아리 · 함께 생각하는 즐거움</div>
+</div>
+</body>
+</html>
