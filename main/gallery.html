@@ -12,15 +12,16 @@
 
 <!-- top nav -->
 <div class="nav">
-  <a class="logo" href="dashboard.html">
+  <a class="logo" href="home.html">
     <span>L</span><span>O</span><span>G</span><span>I</span><span>C</span>
   </a>
   <div class="tabs">
-    <a class="tab-btn" href="dashboard.html">홈</a>
+    <a class="tab-btn" href="home.html">홈</a>
     <a class="tab-btn" href="dashboard.html">소개</a>
-    <a class="tab-btn" href="dashboard.html">일정</a>
+    <a class="tab-btn" href="schedule.html">일정</a>
     <a class="tab-btn active" href="gallery.html">갤러리</a>
-    <a class="tab-btn" href="dashboard.html">자유게시판</a>
+    <a class="tab-btn" href="notice.html">공지사항</a>
+    <a class="tab-btn" href="board.html">자유게시판</a>
     <a class="tab-btn" href="dashboard.html">문의</a>
   </div>
   <div class="nav-right">
@@ -30,12 +31,14 @@
   </div>
 </div>
 
+<main class="content">
 <!-- ============ GALLERY ============ -->
 <section class="page">
   <h2>활동 사진첩</h2>
   <p class="lede">행사가 있을 때마다 폴더를 새로 만들어 사진을 모아보세요. 최신 폴더가 위로 올라와요.</p>
   <div class="gallery-grid" id="folderGrid"></div>
 </section>
+</main>
 
 <!-- new folder modal -->
 <div class="folder-modal hidden" id="folderModal" onclick="closeAddFolderOnBackdrop(event)">

@@ -23,6 +23,12 @@ html,body{
   color:var(--ink);
   background:var(--sky-bottom);
 }
+body{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+main.content{ flex:1 0 auto; }
 button, input, textarea{ font-family:inherit; }
 
 /* ---------- top nav ---------- */
