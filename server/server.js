@@ -50,11 +50,21 @@ db.connect((err) => {
   }
 });
 
-// ⚠️ 임시 스키마 생성용 엔드포인트 (DB가 내부망 전용이라 외부 DB 클라이언트로 접속이 안 돼서 부득이하게 추가)
-// 배포 후 브라우저에서 한 번만 접속해서 테이블을 만들고, 확인되면 이 라우트는 제거할 예정입니다.
-app.get('/setup-db', (req, res) => {
-  const schemaSql = fs.readFileSync(path.join(__dirname, 'db', 'schema.sql'), 'utf8');
-  const setupConn = mysql.createConnection({
+// ⚠️ DB 관리용 SQL 실행 엔드포인트
+// DB가 Cafe24 내부망 전용이라 외부 GUI 클라이언트로 붙기 어려운 상황(핫스팟 등 유동IP)을 우회하기 위한 용도입니다.
+// x-admin-key 헤더가 ADMIN_KEY 환경변수와 일치해야만 동작합니다. 이 키는 절대 외부에 노출하면 안 됩니다.
+app.post('/admin/run-sql', (req, res) => {
+  const adminKey = req.get('x-admin-key');
+  if (!process.env.ADMIN_KEY || adminKey !== process.env.ADMIN_KEY) {
+    return res.status(401).json({ success: false, message: '인증 실패' });
+  }
+
+  const { sql } = req.body;
+  if (!sql || typeof sql !== 'string') {
+    return res.status(400).json({ success: false, message: 'sql 필드가 필요합니다.' });
+  }
+
+  const adminConn = mysql.createConnection({
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
     user: process.env.DB_USER,
@@ -63,16 +73,16 @@ app.get('/setup-db', (req, res) => {
     ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : undefined,
     multipleStatements: true
   });
-  setupConn.connect((connErr) => {
+  adminConn.connect((connErr) => {
     if (connErr) {
       return res.status(500).json({ success: false, message: 'DB 연결 실패', error: connErr.message });
     }
-    setupConn.query(schemaSql, (queryErr) => {
-      setupConn.end();
+    adminConn.query(sql, (queryErr, results) => {
+      adminConn.end();
       if (queryErr) {
-        return res.status(500).json({ success: false, message: '스키마 실행 실패', error: queryErr.message });
+        return res.status(500).json({ success: false, message: 'SQL 실행 실패', error: queryErr.message });
       }
-      res.json({ success: true, message: '스키마(users, notices, board_posts, schedules, gallery_folders, gallery_photos) 생성 완료' });
+      res.json({ success: true, results });
     });
   });
 });
