@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS users (
   password    VARCHAR(255) NOT NULL COMMENT '비밀번호 (해시 저장 권장)',
   role        ENUM('member','officer','admin') NOT NULL DEFAULT 'member',
   created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- 2) 공지사항 (main/js/notice.js 의 in-memory 배열을 대체할 테이블)
 CREATE TABLE IF NOT EXISTS notices (
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS notices (
   content     TEXT NOT NULL,
   created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- 3) 자유게시판 (main/js/board.js 대체)
 CREATE TABLE IF NOT EXISTS board_posts (
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS board_posts (
   content     TEXT NOT NULL,
   created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- 4) 활동 일정 (main/js/schedule.js 대체)
 CREATE TABLE IF NOT EXISTS schedules (
@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS schedules (
   title       VARCHAR(200) NOT NULL,
   info        VARCHAR(300) NOT NULL,
   created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- 5) 사진첩 폴더 (main/js/gallery.js 대체)
 CREATE TABLE IF NOT EXISTS gallery_folders (
@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS gallery_folders (
   name        VARCHAR(100) NOT NULL,
   event_date  DATE NOT NULL,
   created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- 6) 사진첩 사진
 -- 사진 파일 자체는 DB가 아니라 서버 디스크(/server/uploads 등)에 저장하고
@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS gallery_photos (
   image_path  VARCHAR(500) NOT NULL,
   created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (folder_id) REFERENCES gallery_folders(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ============================================================
 -- 목업 계정 (아이디 없이 비밀번호만으로 로그인하는 현재 구조에 맞춘 임시 데이터)
