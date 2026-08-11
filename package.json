@@ -2,8 +2,12 @@
   "name": "logic-web",
   "version": "1.0.0",
   "description": "> Integrated web platform repository for Team LOGIC's official homepage.",
-  "main": "index.js",
+  "main": "web.js",
+  "engines": {
+    "node": "14.x"
+  },
   "scripts": {
+    "start": "node ./web.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -19,7 +23,8 @@
   "homepage": "https://github.com/kwmxxae/logic-web#readme",
   "dependencies": {
     "cors": "^2.8.6",
-    "express": "^5.2.1",
+    "dotenv": "^17.4.2",
+    "express": "^4.22.2",
     "mysql2": "^3.23.1"
   }
 }

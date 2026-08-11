@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>공지사항 · LOGIC 동아리</title>
+<script src="../js/notice.js" defer></script>
+<link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/notice.css">
+</head>
+<body>
+
+<!-- top nav -->
+<div class="nav">
+  <a class="logo" href="home.html">
+    <span>L</span><span>O</span><span>G</span><span>I</span><span>C</span>
+  </a>
+  <div class="tabs">
+    <a class="tab-btn" href="home.html">홈</a>
+    <a class="tab-btn" href="dashboard.html">소개</a>
+    <a class="tab-btn" href="schedule.html">일정</a>
+    <a class="tab-btn" href="gallery.html">갤러리</a>
+    <a class="tab-btn active" href="notice.html">공지사항</a>
+    <a class="tab-btn" href="board.html">자유게시판</a>
+    <a class="tab-btn" href="dashboard.html">문의</a>
+  </div>
+  <div class="nav-right">
+    <span class="greeting">안녕하세요, <b>지민</b>님</span>
+    <button class="icon-btn" title="알림" onclick="alert('새 알림이 없습니다.')">🔔</button>
+    <button class="logout-btn" onclick="handleLogout()">로그아웃</button>
+  </div>
+</div>
+
+<main class="content">
+<!-- ============ NOTICE (공지사항) ============ -->
+<section class="page">
+  <h2>공지사항</h2>
+  <p class="lede">운영진이 남기는 공지사항을 확인하세요.</p>
+
+  <div class="board-toolbar">
+    <span class="board-count" id="noticeCount">전체 0개의 글</span>
+    <button class="write-btn" onclick="toggleNoticeForm()">✍️ 글쓰기</button>
+  </div>
+
+  <div class="write-form" id="noticeForm">
+    <div class="form-row">
+      <input type="text" id="noticeName" placeholder="이름">
+      <input type="text" id="noticeTitle" placeholder="제목">
+    </div>
+    <textarea id="noticeContent" placeholder="내용을 입력하세요"></textarea>
+    <div class="form-actions">
+      <button class="btn-ghost" onclick="toggleNoticeForm(false)">취소</button>
+      <button class="btn-primary" onclick="submitNotice()">등록</button>
+    </div>
+  </div>
+
+  <div id="noticeList"></div>
+</section>
+</main>
+
+<!-- footer -->
+<div class="footer">
+  <div class="footer-note">LOGIC 동아리 · 함께 생각하는 즐거움</div>
+</div>
+</body>
+</html>

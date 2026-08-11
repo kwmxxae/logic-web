@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>활동 사진첩 · LOGIC 동아리</title>
+<script src="../js/gallery.js" defer></script>
+<link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/gallery.css">
+</head>
+<body>
+
+<!-- top nav -->
+<div class="nav">
+  <a class="logo" href="home.html">
+    <span>L</span><span>O</span><span>G</span><span>I</span><span>C</span>
+  </a>
+  <div class="tabs">
+    <a class="tab-btn" href="home.html">홈</a>
+    <a class="tab-btn" href="dashboard.html">소개</a>
+    <a class="tab-btn" href="schedule.html">일정</a>
+    <a class="tab-btn active" href="gallery.html">갤러리</a>
+    <a class="tab-btn" href="notice.html">공지사항</a>
+    <a class="tab-btn" href="board.html">자유게시판</a>
+    <a class="tab-btn" href="dashboard.html">문의</a>
+  </div>
+  <div class="nav-right">
+    <span class="greeting">안녕하세요, <b>지민</b>님</span>
+    <button class="icon-btn" title="알림" onclick="alert('새 알림이 없습니다.')">🔔</button>
+    <button class="logout-btn" onclick="handleLogout()">로그아웃</button>
+  </div>
+</div>
+
+<main class="content">
+<!-- ============ GALLERY ============ -->
+<section class="page">
+  <h2>활동 사진첩</h2>
+  <p class="lede">행사가 있을 때마다 폴더를 새로 만들어 사진을 모아보세요. 최신 폴더가 위로 올라와요.</p>
+  <div class="gallery-grid" id="folderGrid"></div>
+</section>
+</main>
+
+<!-- new folder modal -->
+<div class="folder-modal hidden" id="folderModal" onclick="closeAddFolderOnBackdrop(event)">
+  <div class="folder-modal-inner" onclick="event.stopPropagation()">
+    <h3>새 폴더 만들기</h3>
+    <label class="field-label">행사 이름</label>
+    <input type="text" id="newFolderName" placeholder="예: 7월 정기모임">
+    <label class="field-label">날짜</label>
+    <input type="date" id="newFolderDate">
+    <div class="folder-modal-actions">
+      <button class="btn-ghost" onclick="closeAddFolder()">취소</button>
+      <button class="btn-primary" onclick="createFolder()">만들기</button>
+    </div>
+  </div>
+</div>
+
+<!-- photo viewer modal -->
+<div class="viewer hidden" id="viewer" onclick="closeViewerOnBackdrop(event)">
+  <div class="viewer-inner" onclick="event.stopPropagation()">
+    <div class="viewer-head">
+      <div class="viewer-title">
+        <span class="viewer-name" id="viewerFolderName"></span>
+        <span class="viewer-date" id="viewerFolderDate"></span>
+      </div>
+      <div class="viewer-head-actions">
+        <button class="viewer-delete" onclick="deleteCurrentFolder()">폴더 삭제</button>
+        <button class="viewer-close" onclick="closeViewer()">닫기 ✕</button>
+      </div>
+    </div>
+    <div class="viewer-stage">
+      <button class="viewer-nav prev" id="prevBtn" onclick="navPhoto(-1)">‹</button>
+      <div class="viewer-photo" id="viewerPhoto">
+        <span class="viewer-empty" id="viewerEmpty">아직 사진이 없어요.<br>추가해보세요!</span>
+      </div>
+      <button class="viewer-nav next" id="nextBtn" onclick="navPhoto(1)">›</button>
+    </div>
+    <div class="viewer-footer">
+      <span class="viewer-count" id="viewerCount">0 / 0</span>
+      <div class="viewer-footer-actions">
+        <button class="viewer-delete-photo" id="deletePhotoBtn" onclick="deleteCurrentPhoto()">🗑 이 사진 삭제</button>
+        <label class="upload-btn-inline">
+          📤 사진 추가
+          <input type="file" accept="image/*" multiple onchange="handleUploadInViewer(event)" hidden>
+        </label>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- footer -->
+<div class="footer">
+  <div class="footer-note">LOGIC 동아리 · 함께 생각하는 즐거움</div>
+</div>
+</body>
+</html>
