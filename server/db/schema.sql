@@ -66,3 +66,11 @@ CREATE TABLE IF NOT EXISTS gallery_photos (
   created_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (folder_id) REFERENCES gallery_folders(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ============================================================
+-- 목업 계정 (아이디 없이 비밀번호만으로 로그인하는 현재 구조에 맞춘 임시 데이터)
+-- 초기 비밀번호: 1234
+-- INSERT IGNORE라 여러 번 실행해도 중복 생성되지 않습니다.
+-- ============================================================
+INSERT IGNORE INTO users (student_id, real_name, password, role)
+VALUES ('0000000000', '테스트 계정', '1234', 'member');
