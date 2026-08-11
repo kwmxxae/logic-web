@@ -3,9 +3,20 @@
  실제 서버 내부 처리 관련 로직입니다. 백엔드 API가 여기서 동작하오니 참고바랍니다.
 */
 
-require('dotenv').config({ quiet: true });
-
+const fs = require('fs');
 const path = require('path');
+
+// Cafe24 배포 환경에서는 숨김파일(.env)이 배포 과정에서 누락되는 것으로 보여
+// 숨김파일이 아닌 server/env.cafe24.json이 있으면 그걸 우선 사용하고,
+// 없으면(로컬 개발 등) 기존 방식대로 .env를 읽습니다.
+const cafe24EnvPath = path.join(__dirname, 'env.cafe24.json');
+if (fs.existsSync(cafe24EnvPath)) {
+  Object.assign(process.env, JSON.parse(fs.readFileSync(cafe24EnvPath, 'utf8')));
+  console.log('env.cafe24.json 에서 환경변수를 불러왔습니다.');
+} else {
+  require('dotenv').config({ quiet: true });
+}
+
 const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
@@ -21,6 +32,7 @@ app.get('/', (req, res) => {
 });
 
 // Cafe24 MySQL DB 연동 설정하는 과정입니다. .dotenv에서 접속 정보 불러오도록 되어 있습니다.
+console.log('DB_HOST =', process.env.DB_HOST, '/ DB_NAME =', process.env.DB_NAME);
 const db = mysql.createConnection({
   host: process.env.DB_HOST,
   port: process.env.DB_PORT,
