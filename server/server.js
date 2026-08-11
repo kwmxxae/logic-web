@@ -50,6 +50,33 @@ db.connect((err) => {
   }
 });
 
+// ⚠️ 임시 스키마 생성용 엔드포인트 (DB가 내부망 전용이라 외부 DB 클라이언트로 접속이 안 돼서 부득이하게 추가)
+// 배포 후 브라우저에서 한 번만 접속해서 테이블을 만들고, 확인되면 이 라우트는 제거할 예정입니다.
+app.get('/setup-db', (req, res) => {
+  const schemaSql = fs.readFileSync(path.join(__dirname, 'db', 'schema.sql'), 'utf8');
+  const setupConn = mysql.createConnection({
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : undefined,
+    multipleStatements: true
+  });
+  setupConn.connect((connErr) => {
+    if (connErr) {
+      return res.status(500).json({ success: false, message: 'DB 연결 실패', error: connErr.message });
+    }
+    setupConn.query(schemaSql, (queryErr) => {
+      setupConn.end();
+      if (queryErr) {
+        return res.status(500).json({ success: false, message: '스키마 실행 실패', error: queryErr.message });
+      }
+      res.json({ success: true, message: '스키마(users, notices, board_posts, schedules, gallery_folders, gallery_photos) 생성 완료' });
+    });
+  });
+});
+
 // 기본적 로그인 핸들링 로직입니다.
 app.post('/api/login', (req, res) => {
   const { password } = req.body;
