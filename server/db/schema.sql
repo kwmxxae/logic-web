@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS users (
   real_name   VARCHAR(50)  NOT NULL COMMENT '이름',
   password    VARCHAR(255) NOT NULL COMMENT '비밀번호 (해시 저장 권장)',
   role        ENUM('member','officer','admin') NOT NULL DEFAULT 'member',
-  created_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+  created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 2) 공지사항 (main/js/notice.js 의 in-memory 배열을 대체할 테이블)
@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS notices (
   author_name VARCHAR(50)  NOT NULL,
   title       VARCHAR(200) NOT NULL,
   content     TEXT NOT NULL,
-  created_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS board_posts (
   author_name VARCHAR(50)  NOT NULL,
   title       VARCHAR(200) NOT NULL,
   content     TEXT NOT NULL,
-  created_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS schedules (
   event_date  DATE NOT NULL,
   title       VARCHAR(200) NOT NULL,
   info        VARCHAR(300) NOT NULL,
-  created_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+  created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 5) 사진첩 폴더 (main/js/gallery.js 대체)
@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS gallery_folders (
   id          INT AUTO_INCREMENT PRIMARY KEY,
   name        VARCHAR(100) NOT NULL,
   event_date  DATE NOT NULL,
-  created_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+  created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 6) 사진첩 사진
@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS gallery_photos (
   id          INT AUTO_INCREMENT PRIMARY KEY,
   folder_id   INT NOT NULL,
   image_path  VARCHAR(500) NOT NULL,
-  created_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (folder_id) REFERENCES gallery_folders(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
