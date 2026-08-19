@@ -1,3 +1,13 @@
+document.addEventListener('DOMContentLoaded', function () {
+    const realName = document.getElementById('real-name');
+
+    const userName = sessionStorage.getItem('user');
+
+    if (userName) {
+        realName.textContent = userName;
+    }
+});
+
 /* ---------- tab navigation ---------- */
   function showTab(tab){
     document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
