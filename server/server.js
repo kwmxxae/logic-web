@@ -32,21 +32,28 @@ app.get('/', (req, res) => {
 });
 
 // Cafe24 MySQL DB 연동 설정하는 과정입니다. .dotenv에서 접속 정보 불러오도록 되어 있습니다.
+// 커넥션을 하나만 열어두면(createConnection) 서버가 오래 켜져 있는 동안 Cafe24 쪽에서
+// 유휴 연결을 끊어버려서 "Can't add new command when connection is in closed state" 에러가 났습니다.
+// 풀(createPool)을 쓰면 연결이 끊겨도 다음 쿼리 때 알아서 새 연결을 맺어줍니다.
 console.log('DB_HOST =', process.env.DB_HOST, '/ DB_NAME =', process.env.DB_NAME);
-const db = mysql.createConnection({
+const db = mysql.createPool({
   host: process.env.DB_HOST,
   port: process.env.DB_PORT,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : undefined
+  ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : undefined,
+  waitForConnections: true,
+  connectionLimit: 5,
+  queueLimit: 0
 });
 
-db.connect((err) => {
+db.getConnection((err, connection) => {
   if (err) {
     console.error('DB 연결 실패:', err);
   } else {
     console.log('MySQL 연결 성공!');
+    connection.release();
   }
 });
 
