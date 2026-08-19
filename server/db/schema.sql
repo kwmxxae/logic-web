@@ -74,3 +74,6 @@ CREATE TABLE IF NOT EXISTS gallery_photos (
 -- ============================================================
 INSERT IGNORE INTO users (student_id, real_name, password, role)
 VALUES ('0000000000', '테스트 계정', '1234', 'member');
+
+INSERT IGNORE INTO users (student_id, real_name, password, role)
+VALUES ('2506075', '김준서', 'rlawnstj', 'member');
